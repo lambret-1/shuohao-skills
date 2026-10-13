@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        skill:
+          - novel-art
+          - novel-characters
+          - novel-outline
+          - novel-script
+          - novel-storyboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Self-test (${{ matrix.skill }})
+        run: node skills/${{ matrix.skill }}/scripts/selftest.mjs
+
+  examples:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: outline example validate
+        run: node skills/novel-outline/scripts/novel-outline.mjs validate skills/novel-outline/examples/渡口-outline.json
+
+      - name: characters example validate
+        run: >
+          node skills/novel-characters/scripts/novel-characters.mjs validate
+          skills/novel-characters/examples/渡口-cast.json
+          skills/novel-characters/examples/渡口.txt
+          --lang zh
+
+      - name: art example validate
+        run: >
+          node skills/novel-art/scripts/novel-art.mjs validate
+          skills/novel-art/examples/渡口-art.json
+          --cast skills/novel-characters/examples/渡口-cast.json
+
+      - name: script example validate
+        run: >
+          node skills/novel-script/scripts/novel-script.mjs validate
+          skills/novel-script/examples/渡口-script.json
+          --outline skills/novel-outline/examples/渡口-outline.json
+          --art skills/novel-art/examples/渡口-art.json
+
+      - name: storyboard example validate
+        run: >
+          node skills/novel-storyboard/scripts/novel-storyboard.mjs validate
+          skills/novel-storyboard/examples/渡口-storyboard.json
+          --script skills/novel-script/examples/渡口-script.json
+          --outline skills/novel-outline/examples/渡口-outline.json
+          --cast skills/novel-characters/examples/渡口-cast.json
+          --art skills/novel-art/examples/渡口-art.json
+
+      - name: render outline smoke test
+        run: >
+          node skills/novel-outline/scripts/novel-outline.mjs render
+          skills/novel-outline/examples/渡口-outline.json --html > /tmp/outline.html
+        working-directory: ${{ github.workspace }}
+
+      - name: render characters smoke test
+        run: node skills/novel-characters/scripts/novel-characters.mjs render skills/novel-characters/examples/渡口-cast.json --html > /tmp/cast.html
+
+      - name: render art smoke test
+        run: node skills/novel-art/scripts/novel-art.mjs render skills/novel-art/examples/渡口-art.json --html > /tmp/art.html
+
+      - name: render script smoke test
+        run: >
+          node skills/novel-script/scripts/novel-script.mjs render
+          skills/novel-script/examples/渡口-script.json --html
+          --outline skills/novel-outline/examples/渡口-outline.json
+          --art skills/novel-art/examples/渡口-art.json
+          --cast skills/novel-characters/examples/渡口-cast.json
+          > /tmp/script.html
+
+      - name: render storyboard smoke test
+        run: >
+          node skills/novel-storyboard/scripts/novel-storyboard.mjs render
+          skills/novel-storyboard/examples/渡口-storyboard.json --html
+          --script skills/novel-script/examples/渡口-script.json
+          --outline skills/novel-outline/examples/渡口-outline.json
+          --art skills/novel-art/examples/渡口-art.json
+          > /tmp/storyboard.html
+
+      - name: upload rendered reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: example-reports
+          path: /tmp/*.html
