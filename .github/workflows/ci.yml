@@ -3,22 +3,33 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "test/**"
   pull_request:
     branches: [main]
   workflow_dispatch:
     inputs:
       book_url:
-        description: "小说正文 URL（.txt 或网页）"
+        description: "小说正文来源：仓库内相对路径（如 books/渡口.txt）、GitHub 链接或任意 http(s) URL"
         required: true
       book_title:
         description: "书名（用于输出目录命名，如：八零新婚夜）"
         required: true
         default: "book"
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
+      fail-fast: false
       matrix:
         skill:
           - novel-art
@@ -31,81 +42,85 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Self-test (${{ matrix.skill }})
-        run: node skills/${{ matrix.skill }}/scripts/selftest.mjs
+        run: node "skills/${{ matrix.skill }}/scripts/selftest.mjs"
 
   examples:
     runs-on: ubuntu-latest
     needs: test
+    timeout-minutes: 20
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: outline example validate
-        run: node skills/novel-outline/scripts/novel-outline.mjs validate skills/novel-outline/examples/渡口-outline.json
+        run: node skills/novel-outline/scripts/novel-outline.mjs validate "skills/novel-outline/examples/渡口-outline.json"
 
       - name: characters example validate
         run: >
           node skills/novel-characters/scripts/novel-characters.mjs validate
-          skills/novel-characters/examples/渡口-cast.json
-          skills/novel-characters/examples/渡口.txt
+          "skills/novel-characters/examples/渡口-cast.json"
+          "skills/novel-characters/examples/渡口.txt"
           --lang zh
 
       - name: art example validate
         run: >
           node skills/novel-art/scripts/novel-art.mjs validate
-          skills/novel-art/examples/渡口-art.json
-          --cast skills/novel-characters/examples/渡口-cast.json
+          "skills/novel-art/examples/渡口-art.json"
+          --cast "skills/novel-characters/examples/渡口-cast.json"
 
       - name: script example validate
         run: >
           node skills/novel-script/scripts/novel-script.mjs validate
-          skills/novel-script/examples/渡口-script.json
-          --outline skills/novel-outline/examples/渡口-outline.json
-          --art skills/novel-art/examples/渡口-art.json
+          "skills/novel-script/examples/渡口-script.json"
+          --outline "skills/novel-outline/examples/渡口-outline.json"
+          --art "skills/novel-art/examples/渡口-art.json"
 
       - name: storyboard example validate
         run: >
           node skills/novel-storyboard/scripts/novel-storyboard.mjs validate
-          skills/novel-storyboard/examples/渡口-storyboard.json
-          --script skills/novel-script/examples/渡口-script.json
-          --outline skills/novel-outline/examples/渡口-outline.json
-          --cast skills/novel-characters/examples/渡口-cast.json
-          --art skills/novel-art/examples/渡口-art.json
+          "skills/novel-storyboard/examples/渡口-storyboard.json"
+          --script "skills/novel-script/examples/渡口-script.json"
+          --outline "skills/novel-outline/examples/渡口-outline.json"
+          --cast "skills/novel-characters/examples/渡口-cast.json"
+          --art "skills/novel-art/examples/渡口-art.json"
 
       - name: prepare output dir
         run: mkdir -p test
 
       - name: render outline smoke test
         run: |
-          node skills/novel-outline/scripts/novel-outline.mjs render skills/novel-outline/examples/渡口-outline.json --html > test/outline.html
-          node skills/novel-outline/scripts/novel-outline.mjs render skills/novel-outline/examples/渡口-outline.json --md > test/outline.md
+          node skills/novel-outline/scripts/novel-outline.mjs render "skills/novel-outline/examples/渡口-outline.json" --html > test/outline.html
+          node skills/novel-outline/scripts/novel-outline.mjs render "skills/novel-outline/examples/渡口-outline.json" --md   > test/outline.md
 
       - name: render characters smoke test
         run: |
-          node skills/novel-characters/scripts/novel-characters.mjs render skills/novel-characters/examples/渡口-cast.json --html > test/cast.html
-          node skills/novel-characters/scripts/novel-characters.mjs render skills/novel-characters/examples/渡口-cast.json --md > test/cast.md
+          node skills/novel-characters/scripts/novel-characters.mjs render "skills/novel-characters/examples/渡口-cast.json" --html > test/cast.html
+          node skills/novel-characters/scripts/novel-characters.mjs render "skills/novel-characters/examples/渡口-cast.json" --md   > test/cast.md
 
       - name: render art smoke test
         run: |
-          node skills/novel-art/scripts/novel-art.mjs render skills/novel-art/examples/渡口-art.json --html > test/art.html
-          node skills/novel-art/scripts/novel-art.mjs render skills/novel-art/examples/渡口-art.json --md > test/art.md
+          node skills/novel-art/scripts/novel-art.mjs render "skills/novel-art/examples/渡口-art.json" --html > test/art.html
+          node skills/novel-art/scripts/novel-art.mjs render "skills/novel-art/examples/渡口-art.json" --md   > test/art.md
 
       - name: render script smoke test
         run: |
-          node skills/novel-script/scripts/novel-script.mjs render skills/novel-script/examples/渡口-script.json --html --outline skills/novel-outline/examples/渡口-outline.json --art skills/novel-art/examples/渡口-art.json --cast skills/novel-characters/examples/渡口-cast.json > test/script.html
-          node skills/novel-script/scripts/novel-script.mjs render skills/novel-script/examples/渡口-script.json --md --outline skills/novel-outline/examples/渡口-outline.json --art skills/novel-art/examples/渡口-art.json > test/script.md
+          node skills/novel-script/scripts/novel-script.mjs render "skills/novel-script/examples/渡口-script.json" --html --outline "skills/novel-outline/examples/渡口-outline.json" --art "skills/novel-art/examples/渡口-art.json" --cast "skills/novel-characters/examples/渡口-cast.json" > test/script.html
+          node skills/novel-script/scripts/novel-script.mjs render "skills/novel-script/examples/渡口-script.json" --md   --outline "skills/novel-outline/examples/渡口-outline.json" --art "skills/novel-art/examples/渡口-art.json" > test/script.md
 
       - name: render storyboard smoke test
         run: |
-          node skills/novel-storyboard/scripts/novel-storyboard.mjs render skills/novel-storyboard/examples/渡口-storyboard.json --html --script skills/novel-script/examples/渡口-script.json --outline skills/novel-outline/examples/渡口-outline.json --art skills/novel-art/examples/渡口-art.json > test/storyboard.html
-          node skills/novel-storyboard/scripts/novel-storyboard.mjs render skills/novel-storyboard/examples/渡口-storyboard.json --md --script skills/novel-script/examples/渡口-script.json --outline skills/novel-outline/examples/渡口-outline.json --art skills/novel-art/examples/渡口-art.json > test/storyboard.md
+          node skills/novel-storyboard/scripts/novel-storyboard.mjs render "skills/novel-storyboard/examples/渡口-storyboard.json" --html --script "skills/novel-script/examples/渡口-script.json" --outline "skills/novel-outline/examples/渡口-outline.json" --art "skills/novel-art/examples/渡口-art.json" > test/storyboard.html
+          node skills/novel-storyboard/scripts/novel-storyboard.mjs render "skills/novel-storyboard/examples/渡口-storyboard.json" --md   --script "skills/novel-script/examples/渡口-script.json" --outline "skills/novel-outline/examples/渡口-outline.json" --art "skills/novel-art/examples/渡口-art.json" > test/storyboard.md
 
       - name: upload rendered reports
         if: always()
@@ -115,57 +130,149 @@ jobs:
           path: |
             test/*.html
             test/*.md
+          if-no-files-found: warn
 
       - name: commit reports back to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          git config user.name "github-actions[bot]"
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add test/
-          if ! git diff --staged --quiet; then
-            git commit -m "ci: update test/ example reports [skip ci]"
-            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
+          if git diff --staged --quiet; then
+            echo "no changes to commit"
+            exit 0
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git commit -m "ci: update test/ example reports [skip ci]"
+          git push origin HEAD:main
 
   fetch-book:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: download book
+        env:
+          BOOK_URL: ${{ inputs.book_url }}
+          BOOK_TITLE: ${{ inputs.book_title }}
         run: |
-          mkdir -p test/${{ inputs.book_title }}
-          curl -sL "${{ inputs.book_url }}" -o test/${{ inputs.book_title }}/book.txt
-          wc -c test/${{ inputs.book_title }}/book.txt
+          set -euo pipefail
+
+          # 1) 校验 book_title：不含 / .. 空格，且非空
+          case "$BOOK_TITLE" in
+            */*|*..*|*" "*|"")
+              echo "invalid book_title: '$BOOK_TITLE' (不能含 / .. 空格，且不能为空)" >&2
+              exit 1
+              ;;
+          esac
+
+          # 2) 校验 book_url：不含 shell 元字符
+          case "$BOOK_URL" in
+            *\`*|*\$*|*\;*|*\|*|*\&*|*\<*|*\>*)
+              echo "invalid book_url: 含可疑字符" >&2
+              exit 1
+              ;;
+          esac
+
+          dir="test/$BOOK_TITLE"
+          mkdir -p "$dir"
+          out="$dir/book.txt"
+
+          # 3) 三种来源分支 1
+          if [ -f "$BOOK_URL" ]; then
+            echo "==> local file mode: $BOOK_URL"
+            cp -- "$BOOK_URL" "$out"
+
+          elif [[ "$BOOK_URL" == https://github.com/*/blob/* ]]; then
+            raw="${BOOK_URL/github.com/raw.githubusercontent.com}"
+            raw="${raw//\/blob\//\/}"
+            echo "==> github blob detected, rewriting to raw:"
+            echo "    $raw"
+            curl -fSL --retry 3 --retry-delay 2 --max-time 300 \
+                 -A "novel-ci/1.0" \
+                 "$raw" -o "$out"
+
+          elif [[ "$BOOK_URL" =~ ^https?:// ]]; then
+            echo "==> network mode: $BOOK_URL"
+            curl -fSL --retry 3 --retry-delay 2 --max-time 300 \
+                 -A "novel-ci/1.0" \
+                 "$BOOK_URL" -o "$out"
+
+          else
+            echo "book_url 既不是仓库内文件，也不是 http(s) URL: $BOOK_URL" >&2
+            exit 1
+          fi
+
+          # 4) 大小校验
+          size=$(wc -c < "$out")
+          echo "==> downloaded bytes: $size"
+          if [ "$size" -lt 1000 ]; then
+            echo "文件过小（<1KB），可能不是正文" >&2
+            exit 1
+          fi
+          if [ "$size" -gt 20000000 ]; then
+            echo "文件过大（>20MB），拒绝提交到仓库" >&2
+            exit 1
+          fi
+
+          # 5) HTML 检测：防止把网页当正文
+          if head -c 1024 "$out" | grep -qiE '<!doctype html|<html[ >]|<head[ >]|<meta[ >]'; then
+            echo "内容是 HTML，不是纯文本小说。" >&2
+            echo "如果是 GitHub 文件页，请改用 raw 链接或 blob 链接（本 workflow 会自动改写）。" >&2
+            exit 1
+          fi
+
+          echo "==> book saved to $out"
 
       - name: outline chunk (split into volumes)
+        env:
+          BOOK_TITLE: ${{ inputs.book_title }}
         run: |
-          mkdir -p test/${{ inputs.book_title }}/outline-chunks
+          set -euo pipefail
+          dir="test/$BOOK_TITLE"
+          mkdir -p "$dir/outline-chunks"
           node skills/novel-outline/scripts/novel-outline.mjs chunk \
-            test/${{ inputs.book_title }}/book.txt \
-            test/${{ inputs.book_title }}/outline-chunks
+            "$dir/book.txt" "$dir/outline-chunks"
 
       - name: characters chunk (split into roster blocks)
+        env:
+          BOOK_TITLE: ${{ inputs.book_title }}
         run: |
-          mkdir -p test/${{ inputs.book_title }}/roster-blocks
+          set -euo pipefail
+          dir="test/$BOOK_TITLE"
+          mkdir -p "$dir/roster-blocks"
           node skills/novel-characters/scripts/novel-characters.mjs chunk \
-            test/${{ inputs.book_title }}/book.txt \
-            test/${{ inputs.book_title }}/roster-blocks
+            "$dir/book.txt" "$dir/roster-blocks"
+
+      - name: upload fetched book
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fetched-book-${{ inputs.book_title }}
+          path: test/${{ inputs.book_title }}/
+          if-no-files-found: warn
 
       - name: commit fetched book
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add test/${{ inputs.book_title }}
-          git commit -m "ci: fetch book '${{ inputs.book_title }}' from URL [skip ci]"
-          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BOOK_TITLE: ${{ inputs.book_title }}
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add "test/$BOOK_TITLE"
+          if git diff --staged --quiet; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          git commit -m "ci: fetch book '$BOOK_TITLE' [skip ci]"
+          git push origin HEAD:main
