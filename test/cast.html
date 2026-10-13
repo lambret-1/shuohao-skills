@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="zh"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>渡口 · 角色设定集</title>
+<style>
+/* 冷灰印张 + 铁锈红印记。红色只用在与原文有关的地方和当前选中态。 */
+:root{
+  --paper:#eceded; --panel:#f5f6f5; --side:#e4e6e3; --ink:#191d21; --ink-2:#5b636a; --ink-3:#8c9298;
+  --rule:#d2d5d0; --rule-2:#c2c6bf; --seal:#8a3324; --seal-soft:#8a332412;
+  --serif:"Songti SC","STSong","Source Han Serif SC","Noto Serif CJK SC",Georgia,"Iowan Old Style",serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --top:60px; --side-w:400px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.7 var(--sans);
+  -webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:400}
+button{font-family:inherit}
+
+/* ---------- 顶栏 ---------- */
+.top{position:sticky;top:0;z-index:20;height:var(--top);display:flex;align-items:center;gap:24px;
+  padding:0 20px;background:var(--panel);border-bottom:1px solid var(--rule-2)}
+.brand{display:flex;align-items:baseline;gap:10px;flex:none}
+.brand h1{font:400 22px/1 var(--serif);letter-spacing:.04em}
+.brand em{font:italic 12px/1 var(--serif);color:var(--ink-3)}
+.search{flex:1;max-width:720px;position:relative}
+.search input{width:100%;height:34px;padding:0 12px 0 32px;border:1px solid var(--rule-2);
+  border-radius:3px;background:var(--paper);color:var(--ink);font:14px/1 var(--sans);outline:none}
+.search input:focus{border-color:var(--seal)}
+.search svg{position:absolute;left:10px;top:9px;width:14px;height:14px;stroke:var(--ink-3);fill:none}
+.topmeta{margin-left:auto;font-size:12px;color:var(--ink-3);display:flex;align-items:center;
+  gap:10px;flex:none}
+.topmeta i{font-style:normal;color:var(--rule-2)}
+/* 导出：下载的就是内嵌的那份 cast.json，编辑完能直接喂回 render */
+.expo{margin-left:4px;font:500 11px/1 var(--sans);color:var(--ink-2);background:var(--paper);
+  border:1px solid var(--rule-2);border-radius:2px;padding:6px 10px;cursor:pointer;transition:.15s}
+.expo:hover{border-color:var(--seal);color:var(--seal)}
+.expo:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+
+/* ---------- 骨架 ---------- */
+.shell{display:grid;grid-template-columns:var(--side-w) minmax(0,1fr);align-items:start}
+@media(max-width:1080px){:root{--side-w:100%}.shell{grid-template-columns:1fr}}
+
+/* ---------- 左栏 ---------- */
+.side{position:sticky;top:var(--top);height:calc(100vh - var(--top));overflow-y:auto;
+  background:var(--side);border-right:1px solid var(--rule-2)}
+@media(max-width:1080px){.side{position:static;height:auto}}
+.synopsis{padding:18px 20px;border-bottom:1px solid var(--rule)}
+.lbl{font:500 10px/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--ink-3)}
+.synopsis p{margin:10px 0 0;font:400 14px/1.95 var(--serif)}
+/* 摘要默认三行，底部渐隐——左栏第一屏要留给角色列表。点一下展开，之后不再收起 */
+.syn-clamp{cursor:pointer}
+.syn-clamp p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  -webkit-mask-image:linear-gradient(180deg,#000 58%,transparent);
+  mask-image:linear-gradient(180deg,#000 58%,transparent)}
+.syn-more{display:none;margin-top:7px;padding:0;background:none;border:0;cursor:pointer;
+  font:500 11px/1 var(--sans);letter-spacing:.06em;color:var(--seal)}
+.syn-clamp .syn-more{display:block}
+.syn-more:hover{text-decoration:underline}
+.syn-more:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.roster-h{padding:14px 20px 8px}
+.roster{display:block}
+.rost{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;width:100%;text-align:left;
+  padding:12px 20px;background:none;border:0;border-bottom:1px solid var(--rule);
+  border-left:2px solid transparent;cursor:pointer;color:inherit}
+.rost:hover{background:#00000006}
+.rost.on{background:var(--panel);border-left-color:var(--seal)}
+.rost:focus-visible{outline:2px solid var(--seal);outline-offset:-2px}
+/* 缩略图 = 设定图的左栏切片。设定图固定 16:9、左栏占约 34%，
+   所以把整图按 1/0.34 ≈ 294% 放大再左上对齐，裁出来正好是半身像。
+   比 <img> + object-position 可控：不依赖浏览器怎么 cover。 */
+.rost-thumb{display:block;width:76px;height:76px;border:1px solid var(--rule-2);border-radius:6px;
+  background:#fff no-repeat left top;background-size:294% auto}
+.rost-body{min-width:0}
+.rost-top{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap}
+.rost-n{font:500 10px/1 var(--mono);color:var(--ink-3);font-style:normal}
+.rost-name{font:400 17px/1.2 var(--serif);letter-spacing:.03em}
+.rost-meta{font-size:11px;color:var(--ink-3)}
+.rost-one{display:block;margin-top:5px;font-size:12.5px;line-height:1.65;color:var(--ink-2)}
+.rost-chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px}
+.rost-chips i{font-style:normal;font-size:11px;padding:1px 6px;border:1px solid var(--rule-2);
+  border-radius:2px;color:var(--ink-2);background:var(--paper)}
+.side-foot{padding:14px 20px 28px;font-size:11px;line-height:1.7;color:var(--ink-3)}
+.badge{font-size:11px;padding:1px 7px;border:1px solid var(--rule-2);border-radius:2px;color:var(--ink-2)}
+.rost.on .badge,.char-h .badge{border-color:var(--seal);color:var(--seal)}
+
+/* ---------- 主区 ---------- */
+.main{padding:26px 28px 72px;min-width:0;max-width:1500px}
+.char{display:none}
+.char.on{display:block}
+.char-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding-bottom:14px;border-bottom:1px solid var(--rule-2)}
+.char-n{font:500 13px/1 var(--mono);color:var(--seal)}
+.char-h h2{font:400 clamp(24px,2.4vw,30px)/1.1 var(--serif);letter-spacing:.05em}
+.aka{font-size:12px;color:var(--ink-3)}
+.char-one{margin-left:auto;font:400 14px/1.7 var(--serif);color:var(--ink-2);text-align:right;max-width:44ch}
+@media(max-width:900px){.char-one{margin-left:0;text-align:left}}
+
+.upper{display:grid;grid-template-columns:minmax(0,1fr) 500px;gap:26px;align-items:start;margin-top:20px}
+@media(max-width:1240px){.upper{grid-template-columns:1fr}}
+
+/* 设定图是白底印张 */
+.plate-wrap{position:relative;margin:0}
+.plate{display:block;width:100%;padding:0;background:#fff;border:1px solid var(--rule-2);
+  border-radius:2px;overflow:hidden;cursor:zoom-in}
+.plate img{display:block;width:100%;height:auto}
+.plate:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+/* 右下角浮在图上，hover 才明显——别挡住画面 */
+.copy-img{position:absolute;right:10px;bottom:10px;font:500 11px/1 var(--sans);color:var(--ink-2);
+  background:var(--paper);border:1px solid var(--rule-2);border-radius:3px;padding:6px 10px;
+  cursor:pointer;opacity:.55;transition:.15s}
+.plate-wrap:hover .copy-img{opacity:1}
+.copy-img:hover{border-color:var(--seal);color:var(--seal)}
+.copy-img:focus-visible{opacity:1;outline:2px solid var(--seal);outline-offset:2px}
+.copy-img[data-done]{border-color:var(--seal);color:var(--seal);opacity:1}
+
+/* 弹层 */
+.lightbox{position:fixed;inset:0;z-index:50;display:none;place-items:center;
+  background:#191d21e6;padding:32px;cursor:zoom-out}
+.lightbox.on{display:grid}
+.lightbox img{max-width:100%;max-height:100%;background:#fff;border-radius:2px;
+  box-shadow:0 8px 40px #0006}
+.lightbox-x{position:absolute;top:18px;right:22px;font:500 13px/1 var(--sans);color:#fff;
+  background:none;border:1px solid #fff6;border-radius:3px;padding:8px 12px;cursor:pointer}
+.lightbox-x:hover{border-color:#fff}
+.plate-empty{display:grid;place-items:center;min-height:220px;text-align:center;
+  border:1px dashed var(--rule-2);background:var(--panel);color:var(--ink-3);font-size:13px}
+.plate-empty em{font-style:normal;font-size:12px;opacity:.8}
+.plate-c{margin:7px 0 0;font-size:11px;letter-spacing:.1em;color:var(--ink-3)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;margin-top:24px}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.blk{margin-bottom:20px}
+.blk h3{font:500 11px/1 var(--sans);letter-spacing:.2em;color:var(--seal);margin-bottom:7px}
+.blk p{margin:0;font-size:13.5px;line-height:1.85}
+
+/* 原文：衬线体，铁锈红边栏。这里是书自己在说话 */
+.source .quotes{display:grid;grid-template-columns:1fr 1fr;gap:10px 30px}
+@media(max-width:700px){.source .quotes{grid-template-columns:1fr}}
+.source blockquote{margin:0;padding-left:13px;border-left:2px solid var(--seal);
+  font:400 13.5px/1.85 var(--serif)}
+
+/* ---------- 右侧信息卡 ---------- */
+.side-cards{display:flex;flex-direction:column;gap:14px}
+.card{border:1px solid var(--rule);border-radius:2px;background:var(--panel);padding:14px 16px}
+.card h4{font:500 11px/1 var(--sans);letter-spacing:.2em;color:var(--ink-3);margin-bottom:10px;
+  display:flex;align-items:center;gap:8px}
+.tag-en{font:500 9px/1 var(--mono);letter-spacing:.22em;color:var(--rule-2);font-style:normal}
+.card dl{margin:0}
+.kv{display:flex;gap:12px;padding:2.5px 0;font-size:13px}
+.kv dt{color:var(--ink-3);flex:none;width:46px}
+.kv dd{margin:0;min-width:0}
+.rel-n{color:var(--ink)!important;width:auto!important;min-width:46px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 0;padding:0;list-style:none}
+.tags li{font:400 11px/1.5 var(--mono);color:var(--ink-2);border:1px solid var(--rule-2);
+  background:var(--paper);border-radius:2px;padding:1px 6px}
+
+/* ---------- 提示词 ---------- */
+.prompts{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:28px}
+@media(max-width:900px){.prompts{grid-template-columns:1fr}}
+.pgroup{border:1px solid var(--rule);border-radius:2px;background:var(--panel);padding:6px 14px 10px}
+.pr{border-bottom:1px solid var(--rule)}
+.pgroup .pr:last-of-type{border-bottom:0}
+.pr summary{display:flex;align-items:center;gap:10px;padding:11px 0;cursor:pointer;list-style:none;
+  font:500 12px/1 var(--sans);letter-spacing:.04em}
+.pr summary::-webkit-details-marker{display:none}
+.pr summary::before{content:"▸";color:var(--seal);font-size:11px;transition:transform .15s}
+.pr[open] summary::before{transform:rotate(90deg)}
+.pr summary span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr p{margin:0 0 12px;padding:11px 12px;background:var(--paper);border:1px solid var(--rule);
+  border-radius:2px;font:400 12px/1.75 var(--mono);white-space:pre-wrap;word-break:break-word}
+.pgroup-f{padding:12px 0 4px}
+
+.copy{flex:none;font:500 11px/1 var(--sans);color:var(--ink-2);background:var(--paper);
+  border:1px solid var(--rule-2);border-radius:2px;padding:4px 10px;cursor:pointer;transition:.15s}
+.copy:hover{border-color:var(--seal);color:var(--seal)}
+.copy:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.copy[data-done]{border-color:var(--seal);color:var(--seal)}
+.copy.wide{width:100%;padding:9px}
+
+/* ---------- 关系图谱 ---------- */
+/* 布局在 Node 里算好写进 SVG，这里只管高亮。红色仍然只给选中态 */
+.gtoggle{display:flex;align-items:center;gap:9px;width:100%;padding:13px 20px;text-align:left;
+  background:none;border:0;border-bottom:1px solid var(--rule);border-left:2px solid transparent;
+  cursor:pointer;color:var(--ink-2);font:500 12px/1 var(--sans);letter-spacing:.1em}
+.gtoggle:hover{background:#00000006}
+.gtoggle.on{background:var(--panel);border-left-color:var(--seal);color:var(--seal)}
+.gtoggle:focus-visible{outline:2px solid var(--seal);outline-offset:-2px}
+.gtoggle svg{width:15px;height:15px;flex:none;stroke:currentColor;fill:none;stroke-width:1.3}
+.graph{display:none}
+.graph.on{display:block}
+.main.gmode .char{display:none}
+.graph-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding-bottom:14px;border-bottom:1px solid var(--rule-2)}
+.graph-h h2{font:400 clamp(22px,2.2vw,28px)/1.1 var(--serif);letter-spacing:.05em}
+.graph-h .hint{margin-left:auto;font-size:12px;color:var(--ink-3)}
+.graph-body{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:26px;
+  align-items:start;margin-top:20px}
+@media(max-width:1100px){.graph-body{grid-template-columns:1fr}}
+.graph-canvas{background:var(--panel);border:1px solid var(--rule);border-radius:2px;padding:10px}
+.graph-canvas svg{display:block;width:100%;height:auto}
+.graph-empty{margin:0 0 8px;text-align:center;font-size:12.5px;color:var(--ink-3)}
+.gedge{fill:none;stroke:var(--rule-2);stroke-width:1.1;transition:.15s}
+.gedge.hot{stroke:var(--seal);stroke-width:2}
+.gedge.dim{opacity:.15}
+.gnode{cursor:pointer;transition:.15s}
+.gnode .gdot{fill:var(--paper);stroke:var(--ink-2);stroke-width:1.5}
+/* 看不见的命中区：节点本身才十来个像素，光标很难压准。
+   单独一个类，免得被下面 .lead / .hot 的规则一起染色 */
+.gnode .ghit{fill:none;stroke:none;pointer-events:all}
+.gnode text{font:400 13px var(--serif);fill:var(--ink)}
+.gnode.lead .gdot{fill:var(--seal);stroke:var(--seal)}
+.gnode.hot .gdot{stroke:var(--seal);stroke-width:2.5}
+.gnode.hot text{fill:var(--seal)}
+.gnode.dim{opacity:.22}
+.gnode:focus-visible{outline:2px solid var(--seal)}
+/* 弦上的关系文字。默认按边数决定开不开，悬停的那条永远显示。
+   paint-order + 同色描边 = 给字加一圈底衬，压在弦上也读得清 */
+.glabel{display:none;font:400 9px var(--sans);fill:var(--ink-3);pointer-events:none;
+  paint-order:stroke;stroke:var(--panel);stroke-width:3px;stroke-linejoin:round}
+.graph.labels .glabel{display:block}
+.glabel.dim{opacity:.15}
+.glabel.hot{display:block;fill:var(--seal);font-weight:500}
+.glabtoggle{font:500 11px/1 var(--sans);color:var(--ink-2);background:var(--paper);
+  border:1px solid var(--rule-2);border-radius:2px;padding:4px 10px;cursor:pointer;transition:.15s}
+.glabtoggle:hover{border-color:var(--seal);color:var(--seal)}
+.glabtoggle.on{border-color:var(--seal);color:var(--seal);background:var(--seal-soft)}
+.glabtoggle:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.grel{border:1px solid var(--rule);border-radius:2px;background:var(--panel)}
+.grel h4{font:500 11px/1 var(--sans);letter-spacing:.2em;color:var(--ink-3);padding:14px 16px 11px}
+.grel-list{max-height:56vh;overflow-y:auto;border-top:1px solid var(--rule)}
+.grow{display:block;width:100%;text-align:left;padding:11px 16px;background:none;border:0;
+  border-bottom:1px solid var(--rule);cursor:pointer;color:inherit;transition:.15s}
+.grow:last-child{border-bottom:0}
+.grow:hover,.grow.hot{background:var(--seal-soft)}
+.grow.dim{opacity:.3}
+.grow:focus-visible{outline:2px solid var(--seal);outline-offset:-2px}
+.grow b{font:400 14px/1.4 var(--serif);letter-spacing:.03em}
+.grow i{font-style:normal;color:var(--ink-3);padding:0 6px}
+.grow span{display:block;margin-top:4px;font-size:12.5px;line-height:1.65;color:var(--ink-2)}
+.grow em{font-style:normal;color:var(--ink-3)}
+.grel-foot{margin:0;padding:11px 16px;border-top:1px solid var(--rule);
+  font-size:11px;line-height:1.6;color:var(--ink-3)}
+
+/* 签名：推断标记 */
+.inf{color:var(--ink-3);font-size:.88em;background:var(--seal-soft);padding:0 3px;border-radius:2px}
+
+.nomatch{display:none;padding:20px;font-size:13px;color:var(--ink-3)}
+.nomatch.on{display:block}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* 屏幕上一次一个角色，纸上要完整 */
+@media print{
+  .top,.side,.copy{display:none!important}
+  .shell{display:block}
+  .main{padding:0}
+  .graph{display:block!important;page-break-after:always}
+  .char{display:block!important;page-break-after:always}
+  .pr p{display:block!important}
+  .pr summary::before{content:""}
+  body{background:#fff}
+}
+</style></head><body>
+
+<header class="top">
+  <div class="brand"><h1>渡口</h1></div>
+  <div class="search">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke-width="1.5"/><path d="M11 11l4 4" stroke-width="1.5"/></svg>
+    <input id="q" type="search" placeholder="搜索角色、特质、身份" aria-label="搜索角色、特质、身份" autocomplete="off">
+  </div>
+  <div class="topmeta">
+    <span>角色设定集</span><i>·</i>
+    <span>4 位角色 · 按戏份排序</span>
+    <button class="expo" data-name="渡口-cast.json">导出 JSON</button>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="side">
+    <section class="synopsis syn-clamp"><div class="lbl">故事摘要</div><p>民国年间的清晨，一条河的渡口浓雾未散。摆渡四十年的老船夫照常开船，先后上船的是抱着旧皮箱、独自要过河北上县城的女学生沈知微，穿褪色军呢大衣、右手始终揣在口袋里的男人陆行远，以及挑着货担、嗓门能穿透雾气的货郎胡二爷。四个人同船过河，各自揣着没有说出口的来路与去处，雾越来越浓，船离岸时河面上什么都看不见。</p><button class="syn-more">全部展开</button></section>
+    <button class="gtoggle" aria-controls="graph">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.2" cy="4" r="1.9"/><circle cx="12.8" cy="6.2" r="1.9"/><circle cx="7.2" cy="13" r="1.9"/><path d="M5 4.6l6 1.2M4 5.9l2.5 5.4M11.7 7.9l-3.3 3.7"/></svg>
+      <span>关系图谱</span>
+    </button>
+    <div class="roster-h lbl">角色 · 按戏份排序</div>
+    <nav class="roster" aria-label="角色索引">
+      <button class="rost on" data-target="p-沈知微" data-hay="沈知微 姑娘 学生，独自北上县城的旅人 女 十九岁 拘谨 警觉 倔强 不善求助 十九岁，抱着一只旧皮箱独自过河北上，把所有害怕都攥在发白的指节里。">
+  <span class="rost-thumb"></span>
+  <span class="rost-body">
+    <span class="rost-top">
+      <em class="rost-n">01</em>
+      <b class="rost-name">沈知微</b>
+      <span class="badge">主角</span>
+      <span class="rost-meta">女 · 十九岁</span>
+    </span>
+    <span class="rost-one">十九岁，抱着一只旧皮箱独自过河北上，把所有害怕都攥在发白的指节里。</span>
+    <span class="rost-chips"><i>拘谨</i><i>警觉</i><i>倔强</i><i>不善求助</i></span>
+  </span>
+</button>
+<button class="rost" data-target="p-陆行远" data-hay="陆行远 陆 身份不明的旅人，举止像行伍出身 男 二十七八岁 戒备 果断 沉默 有威慑感 二十七八岁的男人，右手一路揣在大衣口袋里，隔着布也能看出握着什么硬东西。">
+  <span class="rost-thumb"></span>
+  <span class="rost-body">
+    <span class="rost-top">
+      <em class="rost-n">02</em>
+      <b class="rost-name">陆行远</b>
+      <span class="badge">主要角色</span>
+      <span class="rost-meta">男 · 二十七八岁</span>
+    </span>
+    <span class="rost-one">二十七八岁的男人，右手一路揣在大衣口袋里，隔着布也能看出握着什么硬东西。</span>
+    <span class="rost-chips"><i>戒备</i><i>果断</i><i>沉默</i><i>有威慑感</i></span>
+  </span>
+</button>
+<button class="rost" data-target="p-老周" data-hay="老周 老伯 渡口船夫，在这条河上摆渡四十年 男 七十上下（推断） 沉默 耐性 老练 不动声色 在这条河上摆了四十年渡的老船夫，一只眼睛是白的，一船人的来去他都看在另一只里。">
+  <span class="rost-thumb"></span>
+  <span class="rost-body">
+    <span class="rost-top">
+      <em class="rost-n">03</em>
+      <b class="rost-name">老周</b>
+      <span class="badge">主要角色</span>
+      <span class="rost-meta">男 · 七十上下（推断）</span>
+    </span>
+    <span class="rost-one">在这条河上摆了四十年渡的老船夫，一只眼睛是白的，一船人的来去他都看在另一只里。</span>
+    <span class="rost-chips"><i>沉默</i><i>耐性</i><i>老练</i><i>不动声色</i></span>
+  </span>
+</button>
+<button class="rost" data-target="p-胡二爷" data-hay="胡二爷 胡 走街串巷的货郎 男 四十来岁 自来熟 话密 热心 市井通达 挑着两箱货、走一步响三声的胖货郎，一船人的沉默全靠他一个人填。">
+  <span class="rost-thumb"></span>
+  <span class="rost-body">
+    <span class="rost-top">
+      <em class="rost-n">04</em>
+      <b class="rost-name">胡二爷</b>
+      <span class="badge">配角</span>
+      <span class="rost-meta">男 · 四十来岁</span>
+    </span>
+    <span class="rost-one">挑着两箱货、走一步响三声的胖货郎，一船人的沉默全靠他一个人填。</span>
+    <span class="rost-chips"><i>自来熟</i><i>话密</i><i>热心</i><i>市井通达</i></span>
+  </span>
+</button>
+    </nav>
+    <p class="nomatch">没有匹配的角色</p>
+    <p class="side-foot">标注（推断）的条目为原文未明写、依据文本推演。</p>
+  </aside>
+
+  <main class="main">
+    <section class="graph labels" id="graph">
+  <header class="graph-h">
+    <h2>关系图谱</h2>
+    <span class="badge">4 位角色 · 6 组关系</span>
+    <button class="glabtoggle on" aria-pressed="true">关系文字</button>
+    <span class="hint">悬停看关系，点击进角色</span>
+  </header>
+  <div class="graph-body">
+    <div class="graph-canvas">
+      <svg viewBox="0 0 480 480" role="img" aria-label="关系图谱">
+        <g class="gedges"><path class="gedge" data-a="沈知微" data-b="老周" d="M240 110 Q240 240 240 370"></path><path class="gedge" data-a="沈知微" data-b="胡二爷" d="M240 110 Q217.3 217.3 110 240"></path><path class="gedge" data-a="沈知微" data-b="陆行远" d="M240 110 Q262.8 217.3 370 240"></path><path class="gedge" data-a="老周" data-b="陆行远" d="M240 370 Q262.8 262.8 370 240"></path><path class="gedge" data-a="胡二爷" data-b="陆行远" d="M110 240 Q240 240 370 240"></path><path class="gedge" data-a="老周" data-b="胡二爷" d="M240 370 Q217.3 262.8 110 240"></path></g>
+        <g class="gnodes"><g class="gnode lead" data-node="沈知微" data-target="p-沈知微" tabindex="0" role="button" aria-label="沈知微">
+  <circle class="ghit" cx="240" cy="110" r="24"></circle>
+  <circle class="gdot" cx="240" cy="110" r="11"></circle>
+  <text x="240" y="89" text-anchor="middle">沈知微</text>
+</g><g class="gnode" data-node="陆行远" data-target="p-陆行远" tabindex="0" role="button" aria-label="陆行远">
+  <circle class="ghit" cx="370" cy="240" r="24"></circle>
+  <circle class="gdot" cx="370" cy="240" r="9"></circle>
+  <text x="385" y="244.5" text-anchor="start">陆行远</text>
+</g><g class="gnode" data-node="老周" data-target="p-老周" tabindex="0" role="button" aria-label="老周">
+  <circle class="ghit" cx="240" cy="370" r="24"></circle>
+  <circle class="gdot" cx="240" cy="370" r="9"></circle>
+  <text x="240" y="399" text-anchor="middle">老周</text>
+</g><g class="gnode" data-node="胡二爷" data-target="p-胡二爷" tabindex="0" role="button" aria-label="胡二爷">
+  <circle class="ghit" cx="110" cy="240" r="24"></circle>
+  <circle class="gdot" cx="110" cy="240" r="7"></circle>
+  <text x="95" y="244.5" text-anchor="end">胡二爷</text>
+</g></g>
+        <g class="glabels"><text class="glabel" data-a="沈知微" data-b="老周" x="240" y="203.6" text-anchor="middle" dominant-baseline="middle">向他问路的渡…<title>沈知微 · 向他问路的渡客
+老周 · 向他问路的年轻渡客</title></text><text class="glabel" data-a="沈知微" data-b="胡二爷" x="196.1" y="196.1" text-anchor="middle" dominant-baseline="middle">被他搭话关心…<title>沈知微 · 被他搭话关心的同船人
+胡二爷 · 主动搭话、表示关心的同船人</title></text><text class="glabel" data-a="沈知微" data-b="陆行远" x="303.7" y="212.7" text-anchor="middle" dominant-baseline="middle">同船陌生人，…<title>沈知微 · 同船陌生人，彼此各看过对方一眼
+陆行远 · 同船陌生人，两次注意到她</title></text><text class="glabel" data-a="老周" data-b="陆行远" x="267.3" y="303.7" text-anchor="middle" dominant-baseline="middle">催他开船的乘…<title>陆行远 · 催他开船的乘客
+老周 · 催他开船的乘客</title></text><text class="glabel" data-a="胡二爷" data-b="陆行远" x="240" y="240" text-anchor="middle" dominant-baseline="middle">同船人，未有…<title>陆行远 · 同船人，未有交流
+胡二爷 · 同船人，未有交流</title></text><text class="glabel" data-a="老周" data-b="胡二爷" x="176.3" y="267.3" text-anchor="middle" dominant-baseline="middle">相熟的老主顾…<title>老周 · 相熟的老主顾，被他打趣
+胡二爷 · 相熟的老主顾，敢开他玩笑</title></text></g>
+      </svg>
+      
+    </div>
+    <aside class="grel">
+      <h4>全部关系</h4>
+      <div class="grel-list"><button class="grow" data-a="沈知微" data-b="老周" data-target="p-沈知微">
+  <b>沈知微</b><i>—</i><b>老周</b>
+  <span><em>沈知微</em> 向他问路的渡客</span><span><em>老周</em> 向他问路的年轻渡客</span>
+</button><button class="grow" data-a="沈知微" data-b="胡二爷" data-target="p-沈知微">
+  <b>沈知微</b><i>—</i><b>胡二爷</b>
+  <span><em>沈知微</em> 被他搭话关心的同船人</span><span><em>胡二爷</em> 主动搭话、表示关心的同船人</span>
+</button><button class="grow" data-a="沈知微" data-b="陆行远" data-target="p-沈知微">
+  <b>沈知微</b><i>—</i><b>陆行远</b>
+  <span><em>沈知微</em> 同船陌生人，彼此各看过对方一眼</span><span><em>陆行远</em> 同船陌生人，两次注意到她</span>
+</button><button class="grow" data-a="老周" data-b="陆行远" data-target="p-老周">
+  <b>老周</b><i>—</i><b>陆行远</b>
+  <span><em>陆行远</em> 催他开船的乘客</span><span><em>老周</em> 催他开船的乘客</span>
+</button><button class="grow" data-a="胡二爷" data-b="陆行远" data-target="p-胡二爷">
+  <b>胡二爷</b><i>—</i><b>陆行远</b>
+  <span><em>陆行远</em> 同船人，未有交流</span><span><em>胡二爷</em> 同船人，未有交流</span>
+</button><button class="grow" data-a="老周" data-b="胡二爷" data-target="p-老周">
+  <b>老周</b><i>—</i><b>胡二爷</b>
+  <span><em>老周</em> 相熟的老主顾，被他打趣</span><span><em>胡二爷</em> 相熟的老主顾，敢开他玩笑</span>
+</button></div>
+      
+    </aside>
+  </div>
+</section>
+    <article class="char on" id="p-沈知微">
+  <header class="char-h">
+    <span class="char-n">01</span>
+    <h2>沈知微</h2>
+    <span class="badge">主角</span>
+    <span class="aka">又称　姑娘</span>
+    <span class="char-one">十九岁，抱着一只旧皮箱独自过河北上，把所有害怕都攥在发白的指节里。</span>
+  </header>
+
+  <div class="upper">
+    <div class="stage">
+      <div class="plate plate-empty">
+         <span>沈知微 · 尚未出图<br><em>用下方提示词生成</em></span>
+       </div>
+
+      <div class="grid2">
+        <section class="blk"><h3>外貌</h3><p>身形单薄，习惯性地往内缩。梳两条长辫，辫梢系着褪色的红绳。穿藏青色学生装，衣领洗得发白。怀里始终抱着一只旧皮箱，指节因为用力而发白。<span class="inf">（推断）</span>面容清秀，眼睛偏大，看人时带着戒备。</p></section>
+        <section class="blk"><h3>性情</h3><p>说话很轻，尾音总往上挑，像是在向每个人确认什么——既是礼貌，也是不确定。全程低头看水面，极少与人对视。被问及去向时点头又摇头，是那种宁可含糊其辞也不愿把处境说出口的性格。</p></section>
+        <section class="blk"><h3>动机</h3><p>过河往北去县城。至于为什么必须一个人去、去了做什么，她始终没说。</p></section>
+        <section class="blk"><h3>人物弧光</h3><p>在这一段里是静止的——雾中的一船人里，她是唯一什么都没交代的那个。<span class="inf">（推断）</span></p></section>
+      </div>
+
+      <section class="blk source"><h3>原文依据</h3>
+               <div class="quotes"><blockquote>她十九岁，梳着两条辫子，辫梢用褪色的红绳系着。</blockquote><blockquote>她把一只旧皮箱抱在怀里，指节因为用力而发白。</blockquote><blockquote>她说话很轻，尾音总往上挑一点，像是在向每个人确认什么。</blockquote><blockquote>沈知微点了点头，又摇了摇头。</blockquote></div>
+             </section>
+    </div>
+
+    <aside class="side-cards">
+      <div class="card">
+        <dl><div class="kv"><dt>性别</dt><dd>女</dd></div><div class="kv"><dt>年龄</dt><dd>十九岁</dd></div><div class="kv"><dt>身份</dt><dd>学生，独自北上县城的旅人</dd></div></dl>
+      </div>
+
+      <div class="card"><h4>关系</h4>
+               <dl><div class="kv"><dt class="rel-n">老周</dt><dd>向他问路的渡客</dd></div><div class="kv"><dt class="rel-n">胡二爷</dt><dd>被他搭话关心的同船人</dd></div><div class="kv"><dt class="rel-n">陆行远</dt><dd>同船陌生人，彼此各看过对方一眼</dd></div></dl>
+             </div>
+
+      <div class="card">
+        <h4>声音<i class="tag-en">VOICE</i></h4>
+        <dl><div class="kv"><dt>音色</dt><dd>轻而带气声的年轻女声，胸腔支撑薄</dd></div><div class="kv"><dt>音高</dt><dd>中高</dd></div><div class="kv"><dt>语速</dt><dd>偏慢，重要的词前会有一个小停顿</dd></div><div class="kv"><dt>口音</dt><dd>标准官话，无明显地域色彩</dd></div><div class="kv"><dt>情绪</dt><dd>试探、戒备，有所保留</dd></div><div class="kv"><dt>类比</dt><dd>像一个在陌生地方问路、又怕对方追问下去的人</dd></div></dl>
+      </div>
+
+      <div class="card"><h4>形象</h4>
+               <ul class="tags"><li>character sheet</li><li>muted ink-blue palette</li><li>1930s china</li><li>subsurface skin</li><li>directional key light</li></ul>
+             </div>
+    </aside>
+  </div>
+
+  <div class="prompts">
+    <div class="pgroup">
+      <details class="pr">
+  <summary><span>出图提示词 · 喂出图模型用这条</span><button class="copy" data-copy="A slender nineteen-year-old Chinese girl of the 1930s with shoulders drawn slightly inward, wearing a dark navy-blue student tunic with a plain white collar and a mid-calf skirt, holding a battered brown leather suitcase in one hand. oval face with soft rounded cheeks and a delicate jaw, large dark wary eyes with slightly heavy lower lids, straight fine eyebrows, small straight nose, thin lips held lightly closed, a quiet apprehensive expression; centre-parted black hair drawn back into two long braids tied at the tips with faded red string. Young skin with visible pores across the nose and cheeks, uneven tone, faint capillaries at the nostrils and ear rims, subtle subsurface scattering where light passes the ear edge; eyes with a wet specular highlight, moist lower lid, visible iris fibres and a soft limbal ring; eyelids and eyebrows slightly asymmetric — no two sides identical; individual flyaway hair strands breaking the silhouette at the hairline and along the braids. Cotton twill with a visible weave, softened and slightly shiny at the elbows and cuffs from wear, the skirt falling with real weight and self-shadowing inside the pleats; the leather suitcase scuffed to a paler tone at the corners with the grain still readable. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.">复制</button></summary>
+  <p>A slender nineteen-year-old Chinese girl of the 1930s with shoulders drawn slightly inward, wearing a dark navy-blue student tunic with a plain white collar and a mid-calf skirt, holding a battered brown leather suitcase in one hand. oval face with soft rounded cheeks and a delicate jaw, large dark wary eyes with slightly heavy lower lids, straight fine eyebrows, small straight nose, thin lips held lightly closed, a quiet apprehensive expression; centre-parted black hair drawn back into two long braids tied at the tips with faded red string. Young skin with visible pores across the nose and cheeks, uneven tone, faint capillaries at the nostrils and ear rims, subtle subsurface scattering where light passes the ear edge; eyes with a wet specular highlight, moist lower lid, visible iris fibres and a soft limbal ring; eyelids and eyebrows slightly asymmetric — no two sides identical; individual flyaway hair strands breaking the silhouette at the hairline and along the braids. Cotton twill with a visible weave, softened and slightly shiny at the elbows and cuffs from wear, the skirt falling with real weight and self-shadowing inside the pleats; the leather suitcase scuffed to a paler tone at the corners with the grain still readable. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.</p>
+</details>
+      <details class="pr">
+  <summary><span>角色设定图提示词 EN</span><button class="copy" data-copy="Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a dark navy-blue student tunic with a plain white collar, with the face rendered in full detail: oval face with soft rounded cheeks and a delicate jaw, large dark wary eyes with slightly heavy lower lids, straight fine eyebrows, small straight nose, thin lips held lightly closed, a quiet apprehensive expression; centre-parted black hair drawn back into two long braids tied at the tips with faded red string. Young skin with visible pores across the nose and cheeks, uneven tone, faint capillaries at the nostrils and ear rims, subtle subsurface scattering where light passes the ear edge; eyes with a wet specular highlight, moist lower lid, visible iris fibres and a soft limbal ring; eyelids and eyebrows slightly asymmetric — no two sides identical; individual flyaway hair strands breaking the silhouette at the hairline and along the braids. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a slender nineteen-year-old Chinese girl of the 1930s with shoulders drawn slightly inward, wearing a dark navy-blue student tunic with a plain white collar and a mid-calf skirt, holding a battered brown leather suitcase in one hand. Cotton twill with a visible weave, softened and slightly shiny at the elbows and cuffs from wear, the skirt falling with real weight and self-shadowing inside the pleats; the leather suitcase scuffed to a paler tone at the corners with the grain still readable. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the braid tip with its faded red string binding; the worn brass latch and scuffed corner of the leather suitcase; the plain white collar and its cloth knot fastening; one hand gripping the suitcase handle with whitened knuckles; the buckled Mary-Jane shoe and folded white sock. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.">复制</button></summary>
+  <p>Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a dark navy-blue student tunic with a plain white collar, with the face rendered in full detail: oval face with soft rounded cheeks and a delicate jaw, large dark wary eyes with slightly heavy lower lids, straight fine eyebrows, small straight nose, thin lips held lightly closed, a quiet apprehensive expression; centre-parted black hair drawn back into two long braids tied at the tips with faded red string. Young skin with visible pores across the nose and cheeks, uneven tone, faint capillaries at the nostrils and ear rims, subtle subsurface scattering where light passes the ear edge; eyes with a wet specular highlight, moist lower lid, visible iris fibres and a soft limbal ring; eyelids and eyebrows slightly asymmetric — no two sides identical; individual flyaway hair strands breaking the silhouette at the hairline and along the braids. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a slender nineteen-year-old Chinese girl of the 1930s with shoulders drawn slightly inward, wearing a dark navy-blue student tunic with a plain white collar and a mid-calf skirt, holding a battered brown leather suitcase in one hand. Cotton twill with a visible weave, softened and slightly shiny at the elbows and cuffs from wear, the skirt falling with real weight and self-shadowing inside the pleats; the leather suitcase scuffed to a paler tone at the corners with the grain still readable. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the braid tip with its faded red string binding; the worn brass latch and scuffed corner of the leather suitcase; the plain white collar and its cloth knot fastening; one hand gripping the suitcase handle with whitened knuckles; the buckled Mary-Jane shoe and folded white sock. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.</p>
+</details>
+      <details class="pr">
+  <summary><span>反向提示词</span><button class="copy" data-copy="plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop">复制</button></summary>
+  <p>plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop</p>
+</details>
+      <details class="pr">
+  <summary><span>出图提示词（中文对照）</span><button class="copy" data-copy="一九三〇年代的中国少女，十九岁，身形单薄、肩膀微微内收，穿藏青色学生装配素白衣领与及小腿的裙子，手里提着一只磨旧的棕色皮箱。鹅蛋脸颊线柔和，一双警觉的大眼睛，眼睑略厚，眉细而直，鼻梁小而挺，双唇轻抿，神情安静而不安；中分黑发梳成两条长辫，辫梢系褪色红绳。年轻皮肤，鼻翼与脸颊可见毛孔、肤色不匀，鼻翼与耳缘有细微毛细血管，耳廓边缘透光；眼睛有湿润高光、下眼睑水光、虹膜纤维与柔和虹膜环；眼睑和眉毛左右略不对称；发际线与辫子边缘有细碎碎发破开轮廓。棉斜纹布可见织纹，肘部与袖口因磨损而发亮，裙褶下垂有真实重量与自阴影；皮箱四角磨白、皮纹仍可辨。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，光线衰减自然，下巴下方与衣褶处有环境遮蔽；浅景深，面部最实。">复制</button></summary>
+  <p>一九三〇年代的中国少女，十九岁，身形单薄、肩膀微微内收，穿藏青色学生装配素白衣领与及小腿的裙子，手里提着一只磨旧的棕色皮箱。鹅蛋脸颊线柔和，一双警觉的大眼睛，眼睑略厚，眉细而直，鼻梁小而挺，双唇轻抿，神情安静而不安；中分黑发梳成两条长辫，辫梢系褪色红绳。年轻皮肤，鼻翼与脸颊可见毛孔、肤色不匀，鼻翼与耳缘有细微毛细血管，耳廓边缘透光；眼睛有湿润高光、下眼睑水光、虹膜纤维与柔和虹膜环；眼睑和眉毛左右略不对称；发际线与辫子边缘有细碎碎发破开轮廓。棉斜纹布可见织纹，肘部与袖口因磨损而发亮，裙褶下垂有真实重量与自阴影；皮箱四角磨白、皮纹仍可辨。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，光线衰减自然，下巴下方与衣褶处有环境遮蔽；浅景深，面部最实。</p>
+</details>
+    </div>
+    <div class="pgroup">
+      <details class="pr">
+  <summary><span>音色提示词 · 喂 TTS 引擎用这条</span><button class="copy" data-copy="19-year-old female, light breathy soprano, mid-to-high pitch, thin chest support, narrow dynamic range. Quiet volume, slightly hesitant pace, rising inflection at phrase ends. Standard Mandarin, no regional accent. Tentative and watchful.">复制</button></summary>
+  <p>19-year-old female, light breathy soprano, mid-to-high pitch, thin chest support, narrow dynamic range. Quiet volume, slightly hesitant pace, rising inflection at phrase ends. Standard Mandarin, no regional accent. Tentative and watchful.</p>
+</details>
+      <div class="pgroup-f">
+        <button class="copy wide" data-copy="{
+  &quot;name&quot;: &quot;沈知微&quot;,
+  &quot;aliases&quot;: [
+    &quot;姑娘&quot;
+  ],
+  &quot;importance&quot;: &quot;protagonist&quot;,
+  &quot;oneLiner&quot;: &quot;十九岁，抱着一只旧皮箱独自过河北上，把所有害怕都攥在发白的指节里。&quot;,
+  &quot;persona&quot;: {
+    &quot;gender&quot;: &quot;女&quot;,
+    &quot;ageRange&quot;: &quot;十九岁&quot;,
+    &quot;identity&quot;: &quot;学生，独自北上县城的旅人&quot;,
+    &quot;appearance&quot;: &quot;身形单薄，习惯性地往内缩。梳两条长辫，辫梢系着褪色的红绳。穿藏青色学生装，衣领洗得发白。怀里始终抱着一只旧皮箱，指节因为用力而发白。（推断）面容清秀，眼睛偏大，看人时带着戒备。&quot;,
+    &quot;personality&quot;: [
+      &quot;拘谨&quot;,
+      &quot;警觉&quot;,
+      &quot;倔强&quot;,
+      &quot;不善求助&quot;
+    ],
+    &quot;temperament&quot;: &quot;说话很轻，尾音总往上挑，像是在向每个人确认什么——既是礼貌，也是不确定。全程低头看水面，极少与人对视。被问及去向时点头又摇头，是那种宁可含糊其辞也不愿把处境说出口的性格。&quot;,
+    &quot;motivation&quot;: &quot;过河往北去县城。至于为什么必须一个人去、去了做什么，她始终没说。&quot;,
+    &quot;arc&quot;: &quot;在这一段里是静止的——雾中的一船人里，她是唯一什么都没交代的那个。（推断）&quot;,
+    &quot;relationships&quot;: [
+      {
+        &quot;name&quot;: &quot;老周&quot;,
+        &quot;relation&quot;: &quot;向他问路的渡客&quot;
+      },
+      {
+        &quot;name&quot;: &quot;胡二爷&quot;,
+        &quot;relation&quot;: &quot;被他搭话关心的同船人&quot;
+      },
+      {
+        &quot;name&quot;: &quot;陆行远&quot;,
+        &quot;relation&quot;: &quot;同船陌生人，彼此各看过对方一眼&quot;
+      }
+    ],
+    &quot;evidence&quot;: [
+      &quot;她十九岁，梳着两条辫子，辫梢用褪色的红绳系着。&quot;,
+      &quot;她把一只旧皮箱抱在怀里，指节因为用力而发白。&quot;,
+      &quot;她说话很轻，尾音总往上挑一点，像是在向每个人确认什么。&quot;,
+      &quot;沈知微点了点头，又摇了摇头。&quot;
+    ]
+  },
+  &quot;image&quot;: {
+    &quot;prompt&quot;: &quot;A slender nineteen-year-old Chinese girl of the 1930s with shoulders drawn slightly inward, wearing a dark navy-blue student tunic with a plain white collar and a mid-calf skirt, holding a battered brown leather suitcase in one hand. oval face with soft rounded cheeks and a delicate jaw, large dark wary eyes with slightly heavy lower lids, straight fine eyebrows, small straight nose, thin lips held lightly closed, a quiet apprehensive expression; centre-parted black hair drawn back into two long braids tied at the tips with faded red string. Young skin with visible pores across the nose and cheeks, uneven tone, faint capillaries at the nostrils and ear rims, subtle subsurface scattering where light passes the ear edge; eyes with a wet specular highlight, moist lower lid, visible iris fibres and a soft limbal ring; eyelids and eyebrows slightly asymmetric — no two sides identical; individual flyaway hair strands breaking the silhouette at the hairline and along the braids. Cotton twill with a visible weave, softened and slightly shiny at the elbows and cuffs from wear, the skirt falling with real weight and self-shadowing inside the pleats; the leather suitcase scuffed to a paler tone at the corners with the grain still readable. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.&quot;,
+    &quot;promptLocal&quot;: &quot;一九三〇年代的中国少女，十九岁，身形单薄、肩膀微微内收，穿藏青色学生装配素白衣领与及小腿的裙子，手里提着一只磨旧的棕色皮箱。鹅蛋脸颊线柔和，一双警觉的大眼睛，眼睑略厚，眉细而直，鼻梁小而挺，双唇轻抿，神情安静而不安；中分黑发梳成两条长辫，辫梢系褪色红绳。年轻皮肤，鼻翼与脸颊可见毛孔、肤色不匀，鼻翼与耳缘有细微毛细血管，耳廓边缘透光；眼睛有湿润高光、下眼睑水光、虹膜纤维与柔和虹膜环；眼睑和眉毛左右略不对称；发际线与辫子边缘有细碎碎发破开轮廓。棉斜纹布可见织纹，肘部与袖口因磨损而发亮，裙褶下垂有真实重量与自阴影；皮箱四角磨白、皮纹仍可辨。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，光线衰减自然，下巴下方与衣褶处有环境遮蔽；浅景深，面部最实。&quot;,
+    &quot;negativePrompt&quot;: &quot;plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop&quot;,
+    &quot;tags&quot;: [
+      &quot;character sheet&quot;,
+      &quot;muted ink-blue palette&quot;,
+      &quot;1930s china&quot;,
+      &quot;subsurface skin&quot;,
+      &quot;directional key light&quot;
+    ],
+    &quot;sheet&quot;: &quot;Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a dark navy-blue student tunic with a plain white collar, with the face rendered in full detail: oval face with soft rounded cheeks and a delicate jaw, large dark wary eyes with slightly heavy lower lids, straight fine eyebrows, small straight nose, thin lips held lightly closed, a quiet apprehensive expression; centre-parted black hair drawn back into two long braids tied at the tips with faded red string. Young skin with visible pores across the nose and cheeks, uneven tone, faint capillaries at the nostrils and ear rims, subtle subsurface scattering where light passes the ear edge; eyes with a wet specular highlight, moist lower lid, visible iris fibres and a soft limbal ring; eyelids and eyebrows slightly asymmetric — no two sides identical; individual flyaway hair strands breaking the silhouette at the hairline and along the braids. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a slender nineteen-year-old Chinese girl of the 1930s with shoulders drawn slightly inward, wearing a dark navy-blue student tunic with a plain white collar and a mid-calf skirt, holding a battered brown leather suitcase in one hand. Cotton twill with a visible weave, softened and slightly shiny at the elbows and cuffs from wear, the skirt falling with real weight and self-shadowing inside the pleats; the leather suitcase scuffed to a paler tone at the corners with the grain still readable. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the braid tip with its faded red string binding; the worn brass latch and scuffed corner of the leather suitcase; the plain white collar and its cloth knot fastening; one hand gripping the suitcase handle with whitened knuckles; the buckled Mary-Jane shoe and folded white sock. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.&quot;
+  },
+  &quot;voice&quot;: {
+    &quot;timbre&quot;: &quot;轻而带气声的年轻女声，胸腔支撑薄&quot;,
+    &quot;pitch&quot;: &quot;中高&quot;,
+    &quot;pace&quot;: &quot;偏慢，重要的词前会有一个小停顿&quot;,
+    &quot;accent&quot;: &quot;标准官话，无明显地域色彩&quot;,
+    &quot;emotion&quot;: &quot;试探、戒备，有所保留&quot;,
+    &quot;prompt&quot;: &quot;19-year-old female, light breathy soprano, mid-to-high pitch, thin chest support, narrow dynamic range. Quiet volume, slightly hesitant pace, rising inflection at phrase ends. Standard Mandarin, no regional accent. Tentative and watchful.&quot;,
+    &quot;referenceHint&quot;: &quot;像一个在陌生地方问路、又怕对方追问下去的人&quot;
+  }
+}">复制整份角色 JSON</button>
+      </div>
+    </div>
+  </div>
+</article>
+<article class="char" id="p-陆行远">
+  <header class="char-h">
+    <span class="char-n">02</span>
+    <h2>陆行远</h2>
+    <span class="badge">主要角色</span>
+    <span class="aka">又称　陆</span>
+    <span class="char-one">二十七八岁的男人，右手一路揣在大衣口袋里，隔着布也能看出握着什么硬东西。</span>
+  </header>
+
+  <div class="upper">
+    <div class="stage">
+      <div class="plate plate-empty">
+         <span>陆行远 · 尚未出图<br><em>用下方提示词生成</em></span>
+       </div>
+
+      <div class="grid2">
+        <section class="blk"><h3>外貌</h3><p>身形精瘦挺拔。脸很瘦，颧骨很高，右边眉骨上有一道两寸长的旧疤。穿一件洗得发灰的军呢大衣，肩上落着一层湿雾，领子拉起来遮住半张脸。<span class="inf">（推断）</span>短发，靴子磨损严重。</p></section>
+        <section class="blk"><h3>性情</h3><p>上船不扶任何人，一步跨过一尺宽的水面，靴底把船板踩得咚一声响。说话又快又干脆，像在下命令。整段航程站在船头一动不动，右手始终插在口袋里。看沈知微的两眼都很短，什么也没说——他在观察，但不参与。</p></section>
+        <section class="blk"><h3>动机</h3><p>要过河，而且要快。他口袋里那件硬东西的用途，文本没有交代。<span class="inf">（推断）</span></p></section>
+        <section class="blk"><h3>人物弧光</h3><p>静止。唯一的松动是最后回头看了沈知微一眼——比第一次那一眼多了点什么。<span class="inf">（推断）</span></p></section>
+      </div>
+
+      <section class="blk source"><h3>原文依据</h3>
+               <div class="quotes"><blockquote>穿一件洗得发灰的军呢大衣，肩上落了一层湿雾。</blockquote><blockquote>他的脸很瘦，颧骨很高，右边眉骨上有一道两寸长的旧疤。</blockquote><blockquote>他说话又快又干脆，像在下命令：&quot;开船。&quot;</blockquote><blockquote>右手始终插在大衣口袋里，隔着布，能看出握着什么硬东西的形状。</blockquote></div>
+             </section>
+    </div>
+
+    <aside class="side-cards">
+      <div class="card">
+        <dl><div class="kv"><dt>性别</dt><dd>男</dd></div><div class="kv"><dt>年龄</dt><dd>二十七八岁</dd></div><div class="kv"><dt>身份</dt><dd>身份不明的旅人，举止像行伍出身</dd></div></dl>
+      </div>
+
+      <div class="card"><h4>关系</h4>
+               <dl><div class="kv"><dt class="rel-n">老周</dt><dd>催他开船的乘客</dd></div><div class="kv"><dt class="rel-n">沈知微</dt><dd>同船陌生人，两次注意到她</dd></div><div class="kv"><dt class="rel-n">胡二爷</dt><dd>同船人，未有交流</dd></div></dl>
+             </div>
+
+      <div class="card">
+        <h4>声音<i class="tag-en">VOICE</i></h4>
+        <dl><div class="kv"><dt>音色</dt><dd>干涩、聚焦的男中音，共鸣窄，几乎没有暖度</dd></div><div class="kv"><dt>音高</dt><dd>中低</dd></div><div class="kv"><dt>语速</dt><dd>快而短促，句子说完即止</dd></div><div class="kv"><dt>口音</dt><dd>带北方腔的官话，咬字清脆</dd></div><div class="kv"><dt>情绪</dt><dd>表面无波澜，底下绷着</dd></div><div class="kv"><dt>类比</dt><dd>像一个习惯了下达指令、不需要对方回话的人</dd></div></dl>
+      </div>
+
+      <div class="card"><h4>形象</h4>
+               <ul class="tags"><li>character sheet</li><li>muted cold grey palette</li><li>military greatcoat</li><li>weathered skin</li><li>wool nap texture</li></ul>
+             </div>
+    </aside>
+  </div>
+
+  <div class="prompts">
+    <div class="pgroup">
+      <details class="pr">
+  <summary><span>出图提示词 · 喂出图模型用这条</span><button class="copy" data-copy="A lean, rigidly upright Chinese man in his late twenties, wearing a washed-out grey military wool greatcoat with the collar turned up, worn leather boots, right hand in the coat pocket. gaunt angular face, high sharp cheekbones, hollow cheeks, square set jaw, flat unblinking dark eyes under a heavy brow, a two-inch pale old scar cutting across the right brow ridge, straight thin mouth, hard guarded expression; short cropped black hair with high shaved sides. Weather-toughened skin with visible pores, uneven tone and a coarse shaved-stubble shadow along the jaw, faint capillaries at the nostrils; the brow scar sits slightly raised with paler, shinier tissue than the skin around it; eyes with a wet specular highlight, visible iris fibres, reddened inner corners; eyelids and brows noticeably asymmetric; short hair with individual flyaway hair strands breaking the crown silhouette. Heavy wool melton with a visible weave and nap and pilling at the cuffs, shine worn into the elbows and the seat of the coat, the skirt of the greatcoat hanging with real weight and deep self-shadowed folds; leather boots creased across the instep and polished dull at the toe. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.">复制</button></summary>
+  <p>A lean, rigidly upright Chinese man in his late twenties, wearing a washed-out grey military wool greatcoat with the collar turned up, worn leather boots, right hand in the coat pocket. gaunt angular face, high sharp cheekbones, hollow cheeks, square set jaw, flat unblinking dark eyes under a heavy brow, a two-inch pale old scar cutting across the right brow ridge, straight thin mouth, hard guarded expression; short cropped black hair with high shaved sides. Weather-toughened skin with visible pores, uneven tone and a coarse shaved-stubble shadow along the jaw, faint capillaries at the nostrils; the brow scar sits slightly raised with paler, shinier tissue than the skin around it; eyes with a wet specular highlight, visible iris fibres, reddened inner corners; eyelids and brows noticeably asymmetric; short hair with individual flyaway hair strands breaking the crown silhouette. Heavy wool melton with a visible weave and nap and pilling at the cuffs, shine worn into the elbows and the seat of the coat, the skirt of the greatcoat hanging with real weight and deep self-shadowed folds; leather boots creased across the instep and polished dull at the toe. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.</p>
+</details>
+      <details class="pr">
+  <summary><span>角色设定图提示词 EN</span><button class="copy" data-copy="Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a washed-out grey military wool greatcoat with the collar turned up, with the face rendered in full detail: gaunt angular face, high sharp cheekbones, hollow cheeks, square set jaw, flat unblinking dark eyes under a heavy brow, a two-inch pale old scar cutting across the right brow ridge, straight thin mouth, hard guarded expression; short cropped black hair with high shaved sides. Weather-toughened skin with visible pores, uneven tone and a coarse shaved-stubble shadow along the jaw, faint capillaries at the nostrils; the brow scar sits slightly raised with paler, shinier tissue than the skin around it; eyes with a wet specular highlight, visible iris fibres, reddened inner corners; eyelids and brows noticeably asymmetric; short hair with individual flyaway hair strands breaking the crown silhouette. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a lean, rigidly upright Chinese man in his late twenties, wearing a washed-out grey military wool greatcoat with the collar turned up, worn leather boots, right hand in the coat pocket. Heavy wool melton with a visible weave and nap and pilling at the cuffs, shine worn into the elbows and the seat of the coat, the skirt of the greatcoat hanging with real weight and deep self-shadowed folds; leather boots creased across the instep and polished dull at the toe. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the two-inch scar across the right brow ridge in close-up; the greatcoat collar turned up, showing its lining and stitching; the double-breasted button row and worn buttonholes; the right hand inside the coat pocket, fabric strained over something hard; the scuffed leather boot with its buckle. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.">复制</button></summary>
+  <p>Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a washed-out grey military wool greatcoat with the collar turned up, with the face rendered in full detail: gaunt angular face, high sharp cheekbones, hollow cheeks, square set jaw, flat unblinking dark eyes under a heavy brow, a two-inch pale old scar cutting across the right brow ridge, straight thin mouth, hard guarded expression; short cropped black hair with high shaved sides. Weather-toughened skin with visible pores, uneven tone and a coarse shaved-stubble shadow along the jaw, faint capillaries at the nostrils; the brow scar sits slightly raised with paler, shinier tissue than the skin around it; eyes with a wet specular highlight, visible iris fibres, reddened inner corners; eyelids and brows noticeably asymmetric; short hair with individual flyaway hair strands breaking the crown silhouette. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a lean, rigidly upright Chinese man in his late twenties, wearing a washed-out grey military wool greatcoat with the collar turned up, worn leather boots, right hand in the coat pocket. Heavy wool melton with a visible weave and nap and pilling at the cuffs, shine worn into the elbows and the seat of the coat, the skirt of the greatcoat hanging with real weight and deep self-shadowed folds; leather boots creased across the instep and polished dull at the toe. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the two-inch scar across the right brow ridge in close-up; the greatcoat collar turned up, showing its lining and stitching; the double-breasted button row and worn buttonholes; the right hand inside the coat pocket, fabric strained over something hard; the scuffed leather boot with its buckle. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.</p>
+</details>
+      <details class="pr">
+  <summary><span>反向提示词</span><button class="copy" data-copy="plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop">复制</button></summary>
+  <p>plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop</p>
+</details>
+      <details class="pr">
+  <summary><span>出图提示词（中文对照）</span><button class="copy" data-copy="二十七八岁的精瘦中国男子，身形挺拔僵直，穿洗得发灰的军呢大衣、领子竖起，皮靴磨损，右手插在大衣口袋里。脸颊消瘦、颧骨高而锋利，眼窝深，眼神平直冷硬，眉骨沉重，右眉骨横着一道两寸长的旧疤，嘴唇薄而直；短寸黑发，两侧推得很高。风吹日晒的粗糙皮肤，毛孔可见、肤色不匀，下颌有青色胡茬阴影，鼻翼有细微毛细血管；疤痕微微隆起，颜色比周围更淡也更亮；眼睛有湿润高光与虹膜纤维，眼角发红；眼睑与眉毛明显不对称；短发有单根发丝破开头顶轮廓。厚重羊毛呢可见绒面与袖口起球，肘部和下摆磨出光泽，大衣下摆垂坠有重量、褶皱深处有自阴影；皮靴脚背处有折痕，鞋头抛光已钝。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。">复制</button></summary>
+  <p>二十七八岁的精瘦中国男子，身形挺拔僵直，穿洗得发灰的军呢大衣、领子竖起，皮靴磨损，右手插在大衣口袋里。脸颊消瘦、颧骨高而锋利，眼窝深，眼神平直冷硬，眉骨沉重，右眉骨横着一道两寸长的旧疤，嘴唇薄而直；短寸黑发，两侧推得很高。风吹日晒的粗糙皮肤，毛孔可见、肤色不匀，下颌有青色胡茬阴影，鼻翼有细微毛细血管；疤痕微微隆起，颜色比周围更淡也更亮；眼睛有湿润高光与虹膜纤维，眼角发红；眼睑与眉毛明显不对称；短发有单根发丝破开头顶轮廓。厚重羊毛呢可见绒面与袖口起球，肘部和下摆磨出光泽，大衣下摆垂坠有重量、褶皱深处有自阴影；皮靴脚背处有折痕，鞋头抛光已钝。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。</p>
+</details>
+    </div>
+    <div class="pgroup">
+      <details class="pr">
+  <summary><span>音色提示词 · 喂 TTS 引擎用这条</span><button class="copy" data-copy="Late-20s male, dry tight baritone, mid-low pitch, narrow resonant core, hard forward consonants. Low volume, fast clipped pace, abrupt full stops, minimal filler. Northern Mandarin, crisp. Controlled with held tension.">复制</button></summary>
+  <p>Late-20s male, dry tight baritone, mid-low pitch, narrow resonant core, hard forward consonants. Low volume, fast clipped pace, abrupt full stops, minimal filler. Northern Mandarin, crisp. Controlled with held tension.</p>
+</details>
+      <div class="pgroup-f">
+        <button class="copy wide" data-copy="{
+  &quot;name&quot;: &quot;陆行远&quot;,
+  &quot;aliases&quot;: [
+    &quot;陆&quot;
+  ],
+  &quot;importance&quot;: &quot;major&quot;,
+  &quot;oneLiner&quot;: &quot;二十七八岁的男人，右手一路揣在大衣口袋里，隔着布也能看出握着什么硬东西。&quot;,
+  &quot;persona&quot;: {
+    &quot;gender&quot;: &quot;男&quot;,
+    &quot;ageRange&quot;: &quot;二十七八岁&quot;,
+    &quot;identity&quot;: &quot;身份不明的旅人，举止像行伍出身&quot;,
+    &quot;appearance&quot;: &quot;身形精瘦挺拔。脸很瘦，颧骨很高，右边眉骨上有一道两寸长的旧疤。穿一件洗得发灰的军呢大衣，肩上落着一层湿雾，领子拉起来遮住半张脸。（推断）短发，靴子磨损严重。&quot;,
+    &quot;personality&quot;: [
+      &quot;戒备&quot;,
+      &quot;果断&quot;,
+      &quot;沉默&quot;,
+      &quot;有威慑感&quot;
+    ],
+    &quot;temperament&quot;: &quot;上船不扶任何人，一步跨过一尺宽的水面，靴底把船板踩得咚一声响。说话又快又干脆，像在下命令。整段航程站在船头一动不动，右手始终插在口袋里。看沈知微的两眼都很短，什么也没说——他在观察，但不参与。&quot;,
+    &quot;motivation&quot;: &quot;要过河，而且要快。他口袋里那件硬东西的用途，文本没有交代。（推断）&quot;,
+    &quot;arc&quot;: &quot;静止。唯一的松动是最后回头看了沈知微一眼——比第一次那一眼多了点什么。（推断）&quot;,
+    &quot;relationships&quot;: [
+      {
+        &quot;name&quot;: &quot;老周&quot;,
+        &quot;relation&quot;: &quot;催他开船的乘客&quot;
+      },
+      {
+        &quot;name&quot;: &quot;沈知微&quot;,
+        &quot;relation&quot;: &quot;同船陌生人，两次注意到她&quot;
+      },
+      {
+        &quot;name&quot;: &quot;胡二爷&quot;,
+        &quot;relation&quot;: &quot;同船人，未有交流&quot;
+      }
+    ],
+    &quot;evidence&quot;: [
+      &quot;穿一件洗得发灰的军呢大衣，肩上落了一层湿雾。&quot;,
+      &quot;他的脸很瘦，颧骨很高，右边眉骨上有一道两寸长的旧疤。&quot;,
+      &quot;他说话又快又干脆，像在下命令：\&quot;开船。\&quot;&quot;,
+      &quot;右手始终插在大衣口袋里，隔着布，能看出握着什么硬东西的形状。&quot;
+    ]
+  },
+  &quot;image&quot;: {
+    &quot;prompt&quot;: &quot;A lean, rigidly upright Chinese man in his late twenties, wearing a washed-out grey military wool greatcoat with the collar turned up, worn leather boots, right hand in the coat pocket. gaunt angular face, high sharp cheekbones, hollow cheeks, square set jaw, flat unblinking dark eyes under a heavy brow, a two-inch pale old scar cutting across the right brow ridge, straight thin mouth, hard guarded expression; short cropped black hair with high shaved sides. Weather-toughened skin with visible pores, uneven tone and a coarse shaved-stubble shadow along the jaw, faint capillaries at the nostrils; the brow scar sits slightly raised with paler, shinier tissue than the skin around it; eyes with a wet specular highlight, visible iris fibres, reddened inner corners; eyelids and brows noticeably asymmetric; short hair with individual flyaway hair strands breaking the crown silhouette. Heavy wool melton with a visible weave and nap and pilling at the cuffs, shine worn into the elbows and the seat of the coat, the skirt of the greatcoat hanging with real weight and deep self-shadowed folds; leather boots creased across the instep and polished dull at the toe. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.&quot;,
+    &quot;promptLocal&quot;: &quot;二十七八岁的精瘦中国男子，身形挺拔僵直，穿洗得发灰的军呢大衣、领子竖起，皮靴磨损，右手插在大衣口袋里。脸颊消瘦、颧骨高而锋利，眼窝深，眼神平直冷硬，眉骨沉重，右眉骨横着一道两寸长的旧疤，嘴唇薄而直；短寸黑发，两侧推得很高。风吹日晒的粗糙皮肤，毛孔可见、肤色不匀，下颌有青色胡茬阴影，鼻翼有细微毛细血管；疤痕微微隆起，颜色比周围更淡也更亮；眼睛有湿润高光与虹膜纤维，眼角发红；眼睑与眉毛明显不对称；短发有单根发丝破开头顶轮廓。厚重羊毛呢可见绒面与袖口起球，肘部和下摆磨出光泽，大衣下摆垂坠有重量、褶皱深处有自阴影；皮靴脚背处有折痕，鞋头抛光已钝。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。&quot;,
+    &quot;negativePrompt&quot;: &quot;plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop&quot;,
+    &quot;tags&quot;: [
+      &quot;character sheet&quot;,
+      &quot;muted cold grey palette&quot;,
+      &quot;military greatcoat&quot;,
+      &quot;weathered skin&quot;,
+      &quot;wool nap texture&quot;
+    ],
+    &quot;sheet&quot;: &quot;Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a washed-out grey military wool greatcoat with the collar turned up, with the face rendered in full detail: gaunt angular face, high sharp cheekbones, hollow cheeks, square set jaw, flat unblinking dark eyes under a heavy brow, a two-inch pale old scar cutting across the right brow ridge, straight thin mouth, hard guarded expression; short cropped black hair with high shaved sides. Weather-toughened skin with visible pores, uneven tone and a coarse shaved-stubble shadow along the jaw, faint capillaries at the nostrils; the brow scar sits slightly raised with paler, shinier tissue than the skin around it; eyes with a wet specular highlight, visible iris fibres, reddened inner corners; eyelids and brows noticeably asymmetric; short hair with individual flyaway hair strands breaking the crown silhouette. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a lean, rigidly upright Chinese man in his late twenties, wearing a washed-out grey military wool greatcoat with the collar turned up, worn leather boots, right hand in the coat pocket. Heavy wool melton with a visible weave and nap and pilling at the cuffs, shine worn into the elbows and the seat of the coat, the skirt of the greatcoat hanging with real weight and deep self-shadowed folds; leather boots creased across the instep and polished dull at the toe. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the two-inch scar across the right brow ridge in close-up; the greatcoat collar turned up, showing its lining and stitching; the double-breasted button row and worn buttonholes; the right hand inside the coat pocket, fabric strained over something hard; the scuffed leather boot with its buckle. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.&quot;
+  },
+  &quot;voice&quot;: {
+    &quot;timbre&quot;: &quot;干涩、聚焦的男中音，共鸣窄，几乎没有暖度&quot;,
+    &quot;pitch&quot;: &quot;中低&quot;,
+    &quot;pace&quot;: &quot;快而短促，句子说完即止&quot;,
+    &quot;accent&quot;: &quot;带北方腔的官话，咬字清脆&quot;,
+    &quot;emotion&quot;: &quot;表面无波澜，底下绷着&quot;,
+    &quot;prompt&quot;: &quot;Late-20s male, dry tight baritone, mid-low pitch, narrow resonant core, hard forward consonants. Low volume, fast clipped pace, abrupt full stops, minimal filler. Northern Mandarin, crisp. Controlled with held tension.&quot;,
+    &quot;referenceHint&quot;: &quot;像一个习惯了下达指令、不需要对方回话的人&quot;
+  }
+}">复制整份角色 JSON</button>
+      </div>
+    </div>
+  </div>
+</article>
+<article class="char" id="p-老周">
+  <header class="char-h">
+    <span class="char-n">03</span>
+    <h2>老周</h2>
+    <span class="badge">主要角色</span>
+    <span class="aka">又称　老伯</span>
+    <span class="char-one">在这条河上摆了四十年渡的老船夫，一只眼睛是白的，一船人的来去他都看在另一只里。</span>
+  </header>
+
+  <div class="upper">
+    <div class="stage">
+      <div class="plate plate-empty">
+         <span>老周 · 尚未出图<br><em>用下方提示词生成</em></span>
+       </div>
+
+      <div class="grid2">
+        <section class="blk"><h3>外貌</h3><p>背驼得像一张拉满的弓。左眼被早年的风沙磨得只剩一层白翳。笑起来牙齿只剩几颗。<span class="inf">（推断）</span>面皮被风水侵成深褐色，沟壑纵横，手掌因常年握篙而粗厚变形。</p></section>
+        <section class="blk"><h3>性情</h3><p>开口时嗓子里总像卡着半口没咽下去的江水，含混、发沉。被问路时不答话，只用篙子点了点对岸——四十年里同样的问题他听过太多遍。全程只笑过一次，是被胡二爷的浑话逗的。</p></section>
+        <section class="blk"><h3>动机</h3><p>把船开过去。雾再厚也照常开船，这是他四十年的日常。</p></section>
+        <section class="blk"><h3>人物弧光</h3><p>静止。他是这条河的一部分，不是被这一程改变的人。</p></section>
+      </div>
+
+      <section class="blk source"><h3>原文依据</h3>
+               <div class="quotes"><blockquote>他在这条河上摆了四十年渡，背驼得像一张拉满的弓，左眼被早年的风沙磨得只剩一层白翳。</blockquote><blockquote>开口的时候，嗓子里总像卡着半口没咽下去的江水，含混、发沉。</blockquote><blockquote>雾一厚，连自己的手都看不清。</blockquote><blockquote>老周终于笑了一下，牙齿只剩下几颗。</blockquote></div>
+             </section>
+    </div>
+
+    <aside class="side-cards">
+      <div class="card">
+        <dl><div class="kv"><dt>性别</dt><dd>男</dd></div><div class="kv"><dt>年龄</dt><dd>七十上下<span class="inf">（推断）</span></dd></div><div class="kv"><dt>身份</dt><dd>渡口船夫，在这条河上摆渡四十年</dd></div></dl>
+      </div>
+
+      <div class="card"><h4>关系</h4>
+               <dl><div class="kv"><dt class="rel-n">沈知微</dt><dd>向他问路的年轻渡客</dd></div><div class="kv"><dt class="rel-n">胡二爷</dt><dd>相熟的老主顾，被他打趣</dd></div><div class="kv"><dt class="rel-n">陆行远</dt><dd>催他开船的乘客</dd></div></dl>
+             </div>
+
+      <div class="card">
+        <h4>声音<i class="tag-en">VOICE</i></h4>
+        <dl><div class="kv"><dt>音色</dt><dd>沙哑低沉的男中低音，喉音重，带水汽感</dd></div><div class="kv"><dt>音高</dt><dd>低</dd></div><div class="kv"><dt>语速</dt><dd>缓慢，字与字之间拖着气口</dd></div><div class="kv"><dt>口音</dt><dd>南方水乡口音，尾音含混</dd></div><div class="kv"><dt>情绪</dt><dd>疲惫而平静，几乎没有起伏</dd></div><div class="kv"><dt>类比</dt><dd>像一个在同一个渡口喊了四十年&quot;开船&quot;、嗓子早就磨平的人</dd></div></dl>
+      </div>
+
+      <div class="card"><h4>形象</h4>
+               <ul class="tags"><li>character sheet</li><li>muted earth palette</li><li>aged skin</li><li>expression-line wrinkles</li><li>faded indigo cotton</li></ul>
+             </div>
+    </aside>
+  </div>
+
+  <div class="prompts">
+    <div class="pgroup">
+      <details class="pr">
+  <summary><span>出图提示词 · 喂出图模型用这条</span><button class="copy" data-copy="An elderly Chinese ferryman around seventy with a heavily hunched back, wearing a faded indigo padded jacket with frayed cuffs, rolled trousers and worn straw sandals, holding a long bamboo punting pole. deeply weathered face, sunken cheeks, prominent cheekbones, the left eye clouded a pale milky white while the right stays sharp, sparse grey stubble, a nearly toothless mouth caught in a faint weary smile; thin grey hair cropped close to a balding scalp. Old sun-damaged skin: age spots across the cheekbones and the backs of the hands, slack sagging under the jaw and eyes, visible pores and uneven pigmentation. Eyelids and brows are noticeably asymmetric. Wrinkles follow the expression muscles — nasolabial folds, crow’s feet fanning from the outer eye corners, horizontal forehead lines — never randomly scored. The clouded left eye is dulled and slightly sunken with a bluish-white film, while the right keeps a wet specular highlight and visible iris fibres. Sparse grey stubble with individual hairs; thin flyaway hair strands breaking the silhouette at the balding crown. Coarse hand-woven cotton with a visible weave, quilted and pilled, the indigo faded unevenly and rubbed pale at the shoulders and cuffs, patches sewn on in mismatched thread; the fabric hangs heavy and slack with deep self-shadowing in the folds; straw sandals frayed at the weave. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.">复制</button></summary>
+  <p>An elderly Chinese ferryman around seventy with a heavily hunched back, wearing a faded indigo padded jacket with frayed cuffs, rolled trousers and worn straw sandals, holding a long bamboo punting pole. deeply weathered face, sunken cheeks, prominent cheekbones, the left eye clouded a pale milky white while the right stays sharp, sparse grey stubble, a nearly toothless mouth caught in a faint weary smile; thin grey hair cropped close to a balding scalp. Old sun-damaged skin: age spots across the cheekbones and the backs of the hands, slack sagging under the jaw and eyes, visible pores and uneven pigmentation. Eyelids and brows are noticeably asymmetric. Wrinkles follow the expression muscles — nasolabial folds, crow’s feet fanning from the outer eye corners, horizontal forehead lines — never randomly scored. The clouded left eye is dulled and slightly sunken with a bluish-white film, while the right keeps a wet specular highlight and visible iris fibres. Sparse grey stubble with individual hairs; thin flyaway hair strands breaking the silhouette at the balding crown. Coarse hand-woven cotton with a visible weave, quilted and pilled, the indigo faded unevenly and rubbed pale at the shoulders and cuffs, patches sewn on in mismatched thread; the fabric hangs heavy and slack with deep self-shadowing in the folds; straw sandals frayed at the weave. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.</p>
+</details>
+      <details class="pr">
+  <summary><span>角色设定图提示词 EN</span><button class="copy" data-copy="Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a faded indigo padded jacket with frayed cuffs, with the face rendered in full detail: deeply weathered face, sunken cheeks, prominent cheekbones, the left eye clouded a pale milky white while the right stays sharp, sparse grey stubble, a nearly toothless mouth caught in a faint weary smile; thin grey hair cropped close to a balding scalp. Old sun-damaged skin: age spots across the cheekbones and the backs of the hands, slack sagging under the jaw and eyes, visible pores and uneven pigmentation. Eyelids and brows are noticeably asymmetric. Wrinkles follow the expression muscles — nasolabial folds, crow’s feet fanning from the outer eye corners, horizontal forehead lines — never randomly scored. The clouded left eye is dulled and slightly sunken with a bluish-white film, while the right keeps a wet specular highlight and visible iris fibres. Sparse grey stubble with individual hairs; thin flyaway hair strands breaking the silhouette at the balding crown. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is an elderly Chinese ferryman around seventy with a heavily hunched back, wearing a faded indigo padded jacket with frayed cuffs, rolled trousers and worn straw sandals, holding a long bamboo punting pole. Coarse hand-woven cotton with a visible weave, quilted and pilled, the indigo faded unevenly and rubbed pale at the shoulders and cuffs, patches sewn on in mismatched thread; the fabric hangs heavy and slack with deep self-shadowing in the folds; straw sandals frayed at the weave. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the clouded left eye in close-up beside the clear right one; the gnarled hand gripping the bamboo pole; the patched elbow of the padded jacket with frayed cuff; the worn straw sandal on a bare weathered foot; the rolled trouser hem above the ankle. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.">复制</button></summary>
+  <p>Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a faded indigo padded jacket with frayed cuffs, with the face rendered in full detail: deeply weathered face, sunken cheeks, prominent cheekbones, the left eye clouded a pale milky white while the right stays sharp, sparse grey stubble, a nearly toothless mouth caught in a faint weary smile; thin grey hair cropped close to a balding scalp. Old sun-damaged skin: age spots across the cheekbones and the backs of the hands, slack sagging under the jaw and eyes, visible pores and uneven pigmentation. Eyelids and brows are noticeably asymmetric. Wrinkles follow the expression muscles — nasolabial folds, crow’s feet fanning from the outer eye corners, horizontal forehead lines — never randomly scored. The clouded left eye is dulled and slightly sunken with a bluish-white film, while the right keeps a wet specular highlight and visible iris fibres. Sparse grey stubble with individual hairs; thin flyaway hair strands breaking the silhouette at the balding crown. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is an elderly Chinese ferryman around seventy with a heavily hunched back, wearing a faded indigo padded jacket with frayed cuffs, rolled trousers and worn straw sandals, holding a long bamboo punting pole. Coarse hand-woven cotton with a visible weave, quilted and pilled, the indigo faded unevenly and rubbed pale at the shoulders and cuffs, patches sewn on in mismatched thread; the fabric hangs heavy and slack with deep self-shadowing in the folds; straw sandals frayed at the weave. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the clouded left eye in close-up beside the clear right one; the gnarled hand gripping the bamboo pole; the patched elbow of the padded jacket with frayed cuff; the worn straw sandal on a bare weathered foot; the rolled trouser hem above the ankle. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.</p>
+</details>
+      <details class="pr">
+  <summary><span>反向提示词</span><button class="copy" data-copy="plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop">复制</button></summary>
+  <p>plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop</p>
+</details>
+      <details class="pr">
+  <summary><span>出图提示词（中文对照）</span><button class="copy" data-copy="约七十岁的中国老船夫，背驼得厉害，穿褪色靛蓝棉袄、袖口磨破，裤脚挽起，脚踏磨旧草鞋，手握一根长竹篙。面皮饱经风霜，脸颊凹陷、颧骨突出，左眼蒙着一层灰白翳，右眼仍清亮，灰白胡茬稀疏，几乎无牙的嘴带着一丝疲惫的笑；灰发稀薄，贴着谢顶的头皮。老年日晒受损的皮肤：颧骨和手背有老年斑，下颌与眼下松弛，毛孔与色素沉着可见。皱纹顺着表情肌走——法令纹、外眼角放射的鱼尾纹、额头横纹，绝不是随机刻线。左眼浑浊发暗、略微凹陷、覆一层青白薄膜，右眼有湿润高光与虹膜纤维。胡茬根根分明；谢顶处有细碎飘发。粗糙手织棉，绗缝起球，靛蓝褪色不匀，肩部与袖口磨白，补丁用不同颜色的线缝上；布料垂坠沉重松垮，褶皱深处有自阴影；草鞋编织处已磨散。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。">复制</button></summary>
+  <p>约七十岁的中国老船夫，背驼得厉害，穿褪色靛蓝棉袄、袖口磨破，裤脚挽起，脚踏磨旧草鞋，手握一根长竹篙。面皮饱经风霜，脸颊凹陷、颧骨突出，左眼蒙着一层灰白翳，右眼仍清亮，灰白胡茬稀疏，几乎无牙的嘴带着一丝疲惫的笑；灰发稀薄，贴着谢顶的头皮。老年日晒受损的皮肤：颧骨和手背有老年斑，下颌与眼下松弛，毛孔与色素沉着可见。皱纹顺着表情肌走——法令纹、外眼角放射的鱼尾纹、额头横纹，绝不是随机刻线。左眼浑浊发暗、略微凹陷、覆一层青白薄膜，右眼有湿润高光与虹膜纤维。胡茬根根分明；谢顶处有细碎飘发。粗糙手织棉，绗缝起球，靛蓝褪色不匀，肩部与袖口磨白，补丁用不同颜色的线缝上；布料垂坠沉重松垮，褶皱深处有自阴影；草鞋编织处已磨散。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。</p>
+</details>
+    </div>
+    <div class="pgroup">
+      <details class="pr">
+  <summary><span>音色提示词 · 喂 TTS 引擎用这条</span><button class="copy" data-copy="75-year-old male, gravelled husky bass-baritone, low pitch, thick chest resonance, blurred word endings. Low volume, slow pace, long breath pauses, minimal pitch variation. Southern riverside accent, worn-smooth consonants. Settled and weary.">复制</button></summary>
+  <p>75-year-old male, gravelled husky bass-baritone, low pitch, thick chest resonance, blurred word endings. Low volume, slow pace, long breath pauses, minimal pitch variation. Southern riverside accent, worn-smooth consonants. Settled and weary.</p>
+</details>
+      <div class="pgroup-f">
+        <button class="copy wide" data-copy="{
+  &quot;name&quot;: &quot;老周&quot;,
+  &quot;aliases&quot;: [
+    &quot;老伯&quot;
+  ],
+  &quot;importance&quot;: &quot;major&quot;,
+  &quot;oneLiner&quot;: &quot;在这条河上摆了四十年渡的老船夫，一只眼睛是白的，一船人的来去他都看在另一只里。&quot;,
+  &quot;persona&quot;: {
+    &quot;gender&quot;: &quot;男&quot;,
+    &quot;ageRange&quot;: &quot;七十上下（推断）&quot;,
+    &quot;identity&quot;: &quot;渡口船夫，在这条河上摆渡四十年&quot;,
+    &quot;appearance&quot;: &quot;背驼得像一张拉满的弓。左眼被早年的风沙磨得只剩一层白翳。笑起来牙齿只剩几颗。（推断）面皮被风水侵成深褐色，沟壑纵横，手掌因常年握篙而粗厚变形。&quot;,
+    &quot;personality&quot;: [
+      &quot;沉默&quot;,
+      &quot;耐性&quot;,
+      &quot;老练&quot;,
+      &quot;不动声色&quot;
+    ],
+    &quot;temperament&quot;: &quot;开口时嗓子里总像卡着半口没咽下去的江水，含混、发沉。被问路时不答话，只用篙子点了点对岸——四十年里同样的问题他听过太多遍。全程只笑过一次，是被胡二爷的浑话逗的。&quot;,
+    &quot;motivation&quot;: &quot;把船开过去。雾再厚也照常开船，这是他四十年的日常。&quot;,
+    &quot;arc&quot;: &quot;静止。他是这条河的一部分，不是被这一程改变的人。&quot;,
+    &quot;relationships&quot;: [
+      {
+        &quot;name&quot;: &quot;沈知微&quot;,
+        &quot;relation&quot;: &quot;向他问路的年轻渡客&quot;
+      },
+      {
+        &quot;name&quot;: &quot;胡二爷&quot;,
+        &quot;relation&quot;: &quot;相熟的老主顾，被他打趣&quot;
+      },
+      {
+        &quot;name&quot;: &quot;陆行远&quot;,
+        &quot;relation&quot;: &quot;催他开船的乘客&quot;
+      }
+    ],
+    &quot;evidence&quot;: [
+      &quot;他在这条河上摆了四十年渡，背驼得像一张拉满的弓，左眼被早年的风沙磨得只剩一层白翳。&quot;,
+      &quot;开口的时候，嗓子里总像卡着半口没咽下去的江水，含混、发沉。&quot;,
+      &quot;雾一厚，连自己的手都看不清。&quot;,
+      &quot;老周终于笑了一下，牙齿只剩下几颗。&quot;
+    ]
+  },
+  &quot;image&quot;: {
+    &quot;prompt&quot;: &quot;An elderly Chinese ferryman around seventy with a heavily hunched back, wearing a faded indigo padded jacket with frayed cuffs, rolled trousers and worn straw sandals, holding a long bamboo punting pole. deeply weathered face, sunken cheeks, prominent cheekbones, the left eye clouded a pale milky white while the right stays sharp, sparse grey stubble, a nearly toothless mouth caught in a faint weary smile; thin grey hair cropped close to a balding scalp. Old sun-damaged skin: age spots across the cheekbones and the backs of the hands, slack sagging under the jaw and eyes, visible pores and uneven pigmentation. Eyelids and brows are noticeably asymmetric. Wrinkles follow the expression muscles — nasolabial folds, crow’s feet fanning from the outer eye corners, horizontal forehead lines — never randomly scored. The clouded left eye is dulled and slightly sunken with a bluish-white film, while the right keeps a wet specular highlight and visible iris fibres. Sparse grey stubble with individual hairs; thin flyaway hair strands breaking the silhouette at the balding crown. Coarse hand-woven cotton with a visible weave, quilted and pilled, the indigo faded unevenly and rubbed pale at the shoulders and cuffs, patches sewn on in mismatched thread; the fabric hangs heavy and slack with deep self-shadowing in the folds; straw sandals frayed at the weave. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.&quot;,
+    &quot;promptLocal&quot;: &quot;约七十岁的中国老船夫，背驼得厉害，穿褪色靛蓝棉袄、袖口磨破，裤脚挽起，脚踏磨旧草鞋，手握一根长竹篙。面皮饱经风霜，脸颊凹陷、颧骨突出，左眼蒙着一层灰白翳，右眼仍清亮，灰白胡茬稀疏，几乎无牙的嘴带着一丝疲惫的笑；灰发稀薄，贴着谢顶的头皮。老年日晒受损的皮肤：颧骨和手背有老年斑，下颌与眼下松弛，毛孔与色素沉着可见。皱纹顺着表情肌走——法令纹、外眼角放射的鱼尾纹、额头横纹，绝不是随机刻线。左眼浑浊发暗、略微凹陷、覆一层青白薄膜，右眼有湿润高光与虹膜纤维。胡茬根根分明；谢顶处有细碎飘发。粗糙手织棉，绗缝起球，靛蓝褪色不匀，肩部与袖口磨白，补丁用不同颜色的线缝上；布料垂坠沉重松垮，褶皱深处有自阴影；草鞋编织处已磨散。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。&quot;,
+    &quot;negativePrompt&quot;: &quot;plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop&quot;,
+    &quot;tags&quot;: [
+      &quot;character sheet&quot;,
+      &quot;muted earth palette&quot;,
+      &quot;aged skin&quot;,
+      &quot;expression-line wrinkles&quot;,
+      &quot;faded indigo cotton&quot;
+    ],
+    &quot;sheet&quot;: &quot;Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a faded indigo padded jacket with frayed cuffs, with the face rendered in full detail: deeply weathered face, sunken cheeks, prominent cheekbones, the left eye clouded a pale milky white while the right stays sharp, sparse grey stubble, a nearly toothless mouth caught in a faint weary smile; thin grey hair cropped close to a balding scalp. Old sun-damaged skin: age spots across the cheekbones and the backs of the hands, slack sagging under the jaw and eyes, visible pores and uneven pigmentation. Eyelids and brows are noticeably asymmetric. Wrinkles follow the expression muscles — nasolabial folds, crow’s feet fanning from the outer eye corners, horizontal forehead lines — never randomly scored. The clouded left eye is dulled and slightly sunken with a bluish-white film, while the right keeps a wet specular highlight and visible iris fibres. Sparse grey stubble with individual hairs; thin flyaway hair strands breaking the silhouette at the balding crown. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is an elderly Chinese ferryman around seventy with a heavily hunched back, wearing a faded indigo padded jacket with frayed cuffs, rolled trousers and worn straw sandals, holding a long bamboo punting pole. Coarse hand-woven cotton with a visible weave, quilted and pilled, the indigo faded unevenly and rubbed pale at the shoulders and cuffs, patches sewn on in mismatched thread; the fabric hangs heavy and slack with deep self-shadowing in the folds; straw sandals frayed at the weave. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the clouded left eye in close-up beside the clear right one; the gnarled hand gripping the bamboo pole; the patched elbow of the padded jacket with frayed cuff; the worn straw sandal on a bare weathered foot; the rolled trouser hem above the ankle. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.&quot;
+  },
+  &quot;voice&quot;: {
+    &quot;timbre&quot;: &quot;沙哑低沉的男中低音，喉音重，带水汽感&quot;,
+    &quot;pitch&quot;: &quot;低&quot;,
+    &quot;pace&quot;: &quot;缓慢，字与字之间拖着气口&quot;,
+    &quot;accent&quot;: &quot;南方水乡口音，尾音含混&quot;,
+    &quot;emotion&quot;: &quot;疲惫而平静，几乎没有起伏&quot;,
+    &quot;prompt&quot;: &quot;75-year-old male, gravelled husky bass-baritone, low pitch, thick chest resonance, blurred word endings. Low volume, slow pace, long breath pauses, minimal pitch variation. Southern riverside accent, worn-smooth consonants. Settled and weary.&quot;,
+    &quot;referenceHint&quot;: &quot;像一个在同一个渡口喊了四十年\&quot;开船\&quot;、嗓子早就磨平的人&quot;
+  }
+}">复制整份角色 JSON</button>
+      </div>
+    </div>
+  </div>
+</article>
+<article class="char" id="p-胡二爷">
+  <header class="char-h">
+    <span class="char-n">04</span>
+    <h2>胡二爷</h2>
+    <span class="badge">配角</span>
+    <span class="aka">又称　胡</span>
+    <span class="char-one">挑着两箱货、走一步响三声的胖货郎，一船人的沉默全靠他一个人填。</span>
+  </header>
+
+  <div class="upper">
+    <div class="stage">
+      <div class="plate plate-empty">
+         <span>胡二爷 · 尚未出图<br><em>用下方提示词生成</em></span>
+       </div>
+
+      <div class="grid2">
+        <section class="blk"><h3>外貌</h3><p>胖乎乎的，四十来岁。满头是汗，笑起来眼睛眯成两条缝。挑着两只货箱，箱角挂着一串小铜铃，走一步响三声。<span class="inf">（推断）</span>短褐布衣，袖子挽到肘部，腰间束带。</p></section>
+        <section class="blk"><h3>性情</h3><p>嗓门亮得能穿透雾气，人还没到声音先到。上船后一路不停地说话——县城新开的绸缎庄、北边打仗的消息、他那个不成器的儿子。看似只是聒噪，却是全船唯一主动问沈知微&quot;你一个人去县城？&quot;的人，那一句&quot;这世道，一个人不好走&quot;落得比玩笑重。</p></section>
+        <section class="blk"><h3>动机</h3><p>赶上这班船，把货挑到对岸去卖。</p></section>
+        <section class="blk"><h3>人物弧光</h3><p>从纯粹的插科打诨，到最后那声叹息——他是船上唯一说破处境的人。<span class="inf">（推断）</span></p></section>
+      </div>
+
+      <section class="blk source"><h3>原文依据</h3>
+               <div class="quotes"><blockquote>他挑着两只货箱，箱角挂着一串小铜铃，走一步响三声。</blockquote><blockquote>他满头是汗，笑起来眼睛眯成两条缝，嗓门亮得能穿透雾气</blockquote><blockquote>老周，你这船开得比我娘子的脾气还急！</blockquote><blockquote>胡二爷坐在货箱上，一路不停地说话</blockquote><blockquote>一个人不好走。</blockquote></div>
+             </section>
+    </div>
+
+    <aside class="side-cards">
+      <div class="card">
+        <dl><div class="kv"><dt>性别</dt><dd>男</dd></div><div class="kv"><dt>年龄</dt><dd>四十来岁</dd></div><div class="kv"><dt>身份</dt><dd>走街串巷的货郎</dd></div></dl>
+      </div>
+
+      <div class="card"><h4>关系</h4>
+               <dl><div class="kv"><dt class="rel-n">老周</dt><dd>相熟的老主顾，敢开他玩笑</dd></div><div class="kv"><dt class="rel-n">沈知微</dt><dd>主动搭话、表示关心的同船人</dd></div><div class="kv"><dt class="rel-n">陆行远</dt><dd>同船人，未有交流</dd></div></dl>
+             </div>
+
+      <div class="card">
+        <h4>声音<i class="tag-en">VOICE</i></h4>
+        <dl><div class="kv"><dt>音色</dt><dd>明亮、带金属芒的男高音，穿透力强</dd></div><div class="kv"><dt>音高</dt><dd>中高</dd></div><div class="kv"><dt>语速</dt><dd>快，句子连成一片，几乎不换气</dd></div><div class="kv"><dt>口音</dt><dd>北方乡音，元音开阔</dd></div><div class="kv"><dt>情绪</dt><dd>外放、乐呵，毫无防备</dd></div><div class="kv"><dt>类比</dt><dd>像一个隔着两条街就能听见他招呼你的人</dd></div></dl>
+      </div>
+
+      <div class="card"><h4>形象</h4>
+               <ul class="tags"><li>character sheet</li><li>muted ink-blue palette</li><li>ruddy skin</li><li>sweat sheen</li><li>coarse cotton weave</li></ul>
+             </div>
+    </aside>
+  </div>
+
+  <div class="prompts">
+    <div class="pgroup">
+      <details class="pr">
+  <summary><span>出图提示词 · 喂出图模型用这条</span><button class="copy" data-copy="A plump Chinese travelling peddler in his mid-forties, round soft body on stout short legs, wearing a short russet cotton jacket with sleeves rolled to the elbow and a cloth waist sash, carrying a shoulder pole with two wooden crates hung with small brass bells. round full face with fat cheeks pushed up so the eyes crease into thin happy slits, broad flat nose, wide grinning mouth, double chin, sweat beading on a high balding forehead with thinning hair at the sides. Ruddy sun-exposed skin with visible pores, broken capillaries across the cheeks and nose, a sheen of sweat on the forehead catching the light; eyelids and brows slightly asymmetric; laugh lines fanning deep from the eye corners and around the mouth, following the expression muscles; eyes nearly closed by the raised cheeks, with a wet specular highlight in the visible sliver; thinning hair with individual flyaway hair strands breaking the silhouette at the temples. Coarse cotton with a visible weave, sweat-darkened at the collar and under the arms, shine worn into the shoulder where the carrying pole rests, rolled cuffs holding a permanent crease, the cloth hanging with real weight and self-shadowing in the folds; the wooden crates worn smooth and pale at the handled edges. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. warm palette of russet, mustard and brass, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.">复制</button></summary>
+  <p>A plump Chinese travelling peddler in his mid-forties, round soft body on stout short legs, wearing a short russet cotton jacket with sleeves rolled to the elbow and a cloth waist sash, carrying a shoulder pole with two wooden crates hung with small brass bells. round full face with fat cheeks pushed up so the eyes crease into thin happy slits, broad flat nose, wide grinning mouth, double chin, sweat beading on a high balding forehead with thinning hair at the sides. Ruddy sun-exposed skin with visible pores, broken capillaries across the cheeks and nose, a sheen of sweat on the forehead catching the light; eyelids and brows slightly asymmetric; laugh lines fanning deep from the eye corners and around the mouth, following the expression muscles; eyes nearly closed by the raised cheeks, with a wet specular highlight in the visible sliver; thinning hair with individual flyaway hair strands breaking the silhouette at the temples. Coarse cotton with a visible weave, sweat-darkened at the collar and under the arms, shine worn into the shoulder where the carrying pole rests, rolled cuffs holding a permanent crease, the cloth hanging with real weight and self-shadowing in the folds; the wooden crates worn smooth and pale at the handled edges. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. warm palette of russet, mustard and brass, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.</p>
+</details>
+      <details class="pr">
+  <summary><span>角色设定图提示词 EN</span><button class="copy" data-copy="Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a short russet cotton jacket with a cloth waist sash, with the face rendered in full detail: round full face with fat cheeks pushed up so the eyes crease into thin happy slits, broad flat nose, wide grinning mouth, double chin, sweat beading on a high balding forehead with thinning hair at the sides. Ruddy sun-exposed skin with visible pores, broken capillaries across the cheeks and nose, a sheen of sweat on the forehead catching the light; eyelids and brows slightly asymmetric; laugh lines fanning deep from the eye corners and around the mouth, following the expression muscles; eyes nearly closed by the raised cheeks, with a wet specular highlight in the visible sliver; thinning hair with individual flyaway hair strands breaking the silhouette at the temples. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a plump Chinese travelling peddler in his mid-forties, round soft body on stout short legs, wearing a short russet cotton jacket with sleeves rolled to the elbow and a cloth waist sash, carrying a shoulder pole with two wooden crates hung with small brass bells. Coarse cotton with a visible weave, sweat-darkened at the collar and under the arms, shine worn into the shoulder where the carrying pole rests, rolled cuffs holding a permanent crease, the cloth hanging with real weight and self-shadowing in the folds; the wooden crates worn smooth and pale at the handled edges. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the small brass bells hung on the crate corner; the shoulder pole where it rests on the padded shoulder; the sweat-beaded forehead and thinning hairline in close-up; one wooden goods crate with its lid latch and worn edges; the cloth waist sash and its knot. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. warm palette of russet, mustard and brass, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.">复制</button></summary>
+  <p>Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a short russet cotton jacket with a cloth waist sash, with the face rendered in full detail: round full face with fat cheeks pushed up so the eyes crease into thin happy slits, broad flat nose, wide grinning mouth, double chin, sweat beading on a high balding forehead with thinning hair at the sides. Ruddy sun-exposed skin with visible pores, broken capillaries across the cheeks and nose, a sheen of sweat on the forehead catching the light; eyelids and brows slightly asymmetric; laugh lines fanning deep from the eye corners and around the mouth, following the expression muscles; eyes nearly closed by the raised cheeks, with a wet specular highlight in the visible sliver; thinning hair with individual flyaway hair strands breaking the silhouette at the temples. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a plump Chinese travelling peddler in his mid-forties, round soft body on stout short legs, wearing a short russet cotton jacket with sleeves rolled to the elbow and a cloth waist sash, carrying a shoulder pole with two wooden crates hung with small brass bells. Coarse cotton with a visible weave, sweat-darkened at the collar and under the arms, shine worn into the shoulder where the carrying pole rests, rolled cuffs holding a permanent crease, the cloth hanging with real weight and self-shadowing in the folds; the wooden crates worn smooth and pale at the handled edges. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the small brass bells hung on the crate corner; the shoulder pole where it rests on the padded shoulder; the sweat-beaded forehead and thinning hairline in close-up; one wooden goods crate with its lid latch and worn edges; the cloth waist sash and its knot. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. warm palette of russet, mustard and brass, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.</p>
+</details>
+      <details class="pr">
+  <summary><span>反向提示词</span><button class="copy" data-copy="plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop">复制</button></summary>
+  <p>plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop</p>
+</details>
+      <details class="pr">
+  <summary><span>出图提示词（中文对照）</span><button class="copy" data-copy="四十来岁的中国走乡货郎，体态圆胖，腿短敦实，穿赭红色短布褂、袖子挽到手肘、腰间束布带，肩挑扁担，两只木货箱角上挂着小铜铃。圆脸丰满，脸颊高高鼓起把眼睛挤成细缝，鼻子宽扁，嘴大而咧开，双下巴，谢顶的高额头上渗着汗珠，两侧头发稀疏。日晒的红润皮肤，毛孔可见，脸颊和鼻子有破裂的毛细血管，额头一层汗光反着光；笑纹从眼角和嘴周深深散开，顺着表情肌走；眼睛几乎被鼓起的脸颊挤闭，露出的一线里有湿润高光；稀疏头发在鬓角有细碎飘发。粗棉布可见织纹，领口和腋下被汗浸深，肩上扁担压处磨出光泽，挽起的袖口留着固定折痕；木箱被手握处磨得光滑发白。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。">复制</button></summary>
+  <p>四十来岁的中国走乡货郎，体态圆胖，腿短敦实，穿赭红色短布褂、袖子挽到手肘、腰间束布带，肩挑扁担，两只木货箱角上挂着小铜铃。圆脸丰满，脸颊高高鼓起把眼睛挤成细缝，鼻子宽扁，嘴大而咧开，双下巴，谢顶的高额头上渗着汗珠，两侧头发稀疏。日晒的红润皮肤，毛孔可见，脸颊和鼻子有破裂的毛细血管，额头一层汗光反着光；笑纹从眼角和嘴周深深散开，顺着表情肌走；眼睛几乎被鼓起的脸颊挤闭，露出的一线里有湿润高光；稀疏头发在鬓角有细碎飘发。粗棉布可见织纹，领口和腋下被汗浸深，肩上扁担压处磨出光泽，挽起的袖口留着固定折痕；木箱被手握处磨得光滑发白。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。</p>
+</details>
+    </div>
+    <div class="pgroup">
+      <details class="pr">
+  <summary><span>音色提示词 · 喂 TTS 引擎用这条</span><button class="copy" data-copy="Mid-40s male, bright brassy tenor, mid-high pitch, broad forward ring, strong breath support. Loud carrying volume, fast tumbling pace, wide springy intonation, laughter breaking in. Rural northern accent, wide open vowels. Unguardedly cheerful.">复制</button></summary>
+  <p>Mid-40s male, bright brassy tenor, mid-high pitch, broad forward ring, strong breath support. Loud carrying volume, fast tumbling pace, wide springy intonation, laughter breaking in. Rural northern accent, wide open vowels. Unguardedly cheerful.</p>
+</details>
+      <div class="pgroup-f">
+        <button class="copy wide" data-copy="{
+  &quot;name&quot;: &quot;胡二爷&quot;,
+  &quot;aliases&quot;: [
+    &quot;胡&quot;
+  ],
+  &quot;importance&quot;: &quot;supporting&quot;,
+  &quot;oneLiner&quot;: &quot;挑着两箱货、走一步响三声的胖货郎，一船人的沉默全靠他一个人填。&quot;,
+  &quot;persona&quot;: {
+    &quot;gender&quot;: &quot;男&quot;,
+    &quot;ageRange&quot;: &quot;四十来岁&quot;,
+    &quot;identity&quot;: &quot;走街串巷的货郎&quot;,
+    &quot;appearance&quot;: &quot;胖乎乎的，四十来岁。满头是汗，笑起来眼睛眯成两条缝。挑着两只货箱，箱角挂着一串小铜铃，走一步响三声。（推断）短褐布衣，袖子挽到肘部，腰间束带。&quot;,
+    &quot;personality&quot;: [
+      &quot;自来熟&quot;,
+      &quot;话密&quot;,
+      &quot;热心&quot;,
+      &quot;市井通达&quot;
+    ],
+    &quot;temperament&quot;: &quot;嗓门亮得能穿透雾气，人还没到声音先到。上船后一路不停地说话——县城新开的绸缎庄、北边打仗的消息、他那个不成器的儿子。看似只是聒噪，却是全船唯一主动问沈知微\&quot;你一个人去县城？\&quot;的人，那一句\&quot;这世道，一个人不好走\&quot;落得比玩笑重。&quot;,
+    &quot;motivation&quot;: &quot;赶上这班船，把货挑到对岸去卖。&quot;,
+    &quot;arc&quot;: &quot;从纯粹的插科打诨，到最后那声叹息——他是船上唯一说破处境的人。（推断）&quot;,
+    &quot;relationships&quot;: [
+      {
+        &quot;name&quot;: &quot;老周&quot;,
+        &quot;relation&quot;: &quot;相熟的老主顾，敢开他玩笑&quot;
+      },
+      {
+        &quot;name&quot;: &quot;沈知微&quot;,
+        &quot;relation&quot;: &quot;主动搭话、表示关心的同船人&quot;
+      },
+      {
+        &quot;name&quot;: &quot;陆行远&quot;,
+        &quot;relation&quot;: &quot;同船人，未有交流&quot;
+      }
+    ],
+    &quot;evidence&quot;: [
+      &quot;他挑着两只货箱，箱角挂着一串小铜铃，走一步响三声。&quot;,
+      &quot;他满头是汗，笑起来眼睛眯成两条缝，嗓门亮得能穿透雾气&quot;,
+      &quot;老周，你这船开得比我娘子的脾气还急！&quot;,
+      &quot;胡二爷坐在货箱上，一路不停地说话&quot;,
+      &quot;一个人不好走。&quot;
+    ]
+  },
+  &quot;image&quot;: {
+    &quot;prompt&quot;: &quot;A plump Chinese travelling peddler in his mid-forties, round soft body on stout short legs, wearing a short russet cotton jacket with sleeves rolled to the elbow and a cloth waist sash, carrying a shoulder pole with two wooden crates hung with small brass bells. round full face with fat cheeks pushed up so the eyes crease into thin happy slits, broad flat nose, wide grinning mouth, double chin, sweat beading on a high balding forehead with thinning hair at the sides. Ruddy sun-exposed skin with visible pores, broken capillaries across the cheeks and nose, a sheen of sweat on the forehead catching the light; eyelids and brows slightly asymmetric; laugh lines fanning deep from the eye corners and around the mouth, following the expression muscles; eyes nearly closed by the raised cheeks, with a wet specular highlight in the visible sliver; thinning hair with individual flyaway hair strands breaking the silhouette at the temples. Coarse cotton with a visible weave, sweat-darkened at the collar and under the arms, shine worn into the shoulder where the carrying pole rests, rolled cuffs holding a permanent crease, the cloth hanging with real weight and self-shadowing in the folds; the wooden crates worn smooth and pale at the handled edges. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. warm palette of russet, mustard and brass, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.&quot;,
+    &quot;promptLocal&quot;: &quot;四十来岁的中国走乡货郎，体态圆胖，腿短敦实，穿赭红色短布褂、袖子挽到手肘、腰间束布带，肩挑扁担，两只木货箱角上挂着小铜铃。圆脸丰满，脸颊高高鼓起把眼睛挤成细缝，鼻子宽扁，嘴大而咧开，双下巴，谢顶的高额头上渗着汗珠，两侧头发稀疏。日晒的红润皮肤，毛孔可见，脸颊和鼻子有破裂的毛细血管，额头一层汗光反着光；笑纹从眼角和嘴周深深散开，顺着表情肌走；眼睛几乎被鼓起的脸颊挤闭，露出的一线里有湿润高光；稀疏头发在鬓角有细碎飘发。粗棉布可见织纹，领口和腋下被汗浸深，肩上扁担压处磨出光泽，挽起的袖口留着固定折痕；木箱被手握处磨得光滑发白。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。&quot;,
+    &quot;negativePrompt&quot;: &quot;plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop&quot;,
+    &quot;tags&quot;: [
+      &quot;character sheet&quot;,
+      &quot;muted ink-blue palette&quot;,
+      &quot;ruddy skin&quot;,
+      &quot;sweat sheen&quot;,
+      &quot;coarse cotton weave&quot;
+    ],
+    &quot;sheet&quot;: &quot;Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a short russet cotton jacket with a cloth waist sash, with the face rendered in full detail: round full face with fat cheeks pushed up so the eyes crease into thin happy slits, broad flat nose, wide grinning mouth, double chin, sweat beading on a high balding forehead with thinning hair at the sides. Ruddy sun-exposed skin with visible pores, broken capillaries across the cheeks and nose, a sheen of sweat on the forehead catching the light; eyelids and brows slightly asymmetric; laugh lines fanning deep from the eye corners and around the mouth, following the expression muscles; eyes nearly closed by the raised cheeks, with a wet specular highlight in the visible sliver; thinning hair with individual flyaway hair strands breaking the silhouette at the temples. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a plump Chinese travelling peddler in his mid-forties, round soft body on stout short legs, wearing a short russet cotton jacket with sleeves rolled to the elbow and a cloth waist sash, carrying a shoulder pole with two wooden crates hung with small brass bells. Coarse cotton with a visible weave, sweat-darkened at the collar and under the arms, shine worn into the shoulder where the carrying pole rests, rolled cuffs holding a permanent crease, the cloth hanging with real weight and self-shadowing in the folds; the wooden crates worn smooth and pale at the handled edges. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the small brass bells hung on the crate corner; the shoulder pole where it rests on the padded shoulder; the sweat-beaded forehead and thinning hairline in close-up; one wooden goods crate with its lid latch and worn edges; the cloth waist sash and its knot. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. warm palette of russet, mustard and brass, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.&quot;
+  },
+  &quot;voice&quot;: {
+    &quot;timbre&quot;: &quot;明亮、带金属芒的男高音，穿透力强&quot;,
+    &quot;pitch&quot;: &quot;中高&quot;,
+    &quot;pace&quot;: &quot;快，句子连成一片，几乎不换气&quot;,
+    &quot;accent&quot;: &quot;北方乡音，元音开阔&quot;,
+    &quot;emotion&quot;: &quot;外放、乐呵，毫无防备&quot;,
+    &quot;prompt&quot;: &quot;Mid-40s male, bright brassy tenor, mid-high pitch, broad forward ring, strong breath support. Loud carrying volume, fast tumbling pace, wide springy intonation, laughter breaking in. Rural northern accent, wide open vowels. Unguardedly cheerful.&quot;,
+    &quot;referenceHint&quot;: &quot;像一个隔着两条街就能听见他招呼你的人&quot;
+  }
+}">复制整份角色 JSON</button>
+      </div>
+    </div>
+  </div>
+</article>
+  </main>
+</div>
+
+<div class="lightbox" role="dialog" aria-modal="true">
+  <button class="lightbox-x" aria-label="关闭">关闭</button>
+  <img alt="">
+</div>
+
+<script type="application/json" id="cast-data">{"source":"渡口","lang":"zh","summary":"民国年间的清晨，一条河的渡口浓雾未散。摆渡四十年的老船夫照常开船，先后上船的是抱着旧皮箱、独自要过河北上县城的女学生沈知微，穿褪色军呢大衣、右手始终揣在口袋里的男人陆行远，以及挑着货担、嗓门能穿透雾气的货郎胡二爷。四个人同船过河，各自揣着没有说出口的来路与去处，雾越来越浓，船离岸时河面上什么都看不见。","characters":[{"name":"沈知微","aliases":["姑娘"],"importance":"protagonist","oneLiner":"十九岁，抱着一只旧皮箱独自过河北上，把所有害怕都攥在发白的指节里。","persona":{"gender":"女","ageRange":"十九岁","identity":"学生，独自北上县城的旅人","appearance":"身形单薄，习惯性地往内缩。梳两条长辫，辫梢系着褪色的红绳。穿藏青色学生装，衣领洗得发白。怀里始终抱着一只旧皮箱，指节因为用力而发白。（推断）面容清秀，眼睛偏大，看人时带着戒备。","personality":["拘谨","警觉","倔强","不善求助"],"temperament":"说话很轻，尾音总往上挑，像是在向每个人确认什么——既是礼貌，也是不确定。全程低头看水面，极少与人对视。被问及去向时点头又摇头，是那种宁可含糊其辞也不愿把处境说出口的性格。","motivation":"过河往北去县城。至于为什么必须一个人去、去了做什么，她始终没说。","arc":"在这一段里是静止的——雾中的一船人里，她是唯一什么都没交代的那个。（推断）","relationships":[{"name":"老周","relation":"向他问路的渡客"},{"name":"胡二爷","relation":"被他搭话关心的同船人"},{"name":"陆行远","relation":"同船陌生人，彼此各看过对方一眼"}],"evidence":["她十九岁，梳着两条辫子，辫梢用褪色的红绳系着。","她把一只旧皮箱抱在怀里，指节因为用力而发白。","她说话很轻，尾音总往上挑一点，像是在向每个人确认什么。","沈知微点了点头，又摇了摇头。"]},"image":{"prompt":"A slender nineteen-year-old Chinese girl of the 1930s with shoulders drawn slightly inward, wearing a dark navy-blue student tunic with a plain white collar and a mid-calf skirt, holding a battered brown leather suitcase in one hand. oval face with soft rounded cheeks and a delicate jaw, large dark wary eyes with slightly heavy lower lids, straight fine eyebrows, small straight nose, thin lips held lightly closed, a quiet apprehensive expression; centre-parted black hair drawn back into two long braids tied at the tips with faded red string. Young skin with visible pores across the nose and cheeks, uneven tone, faint capillaries at the nostrils and ear rims, subtle subsurface scattering where light passes the ear edge; eyes with a wet specular highlight, moist lower lid, visible iris fibres and a soft limbal ring; eyelids and eyebrows slightly asymmetric — no two sides identical; individual flyaway hair strands breaking the silhouette at the hairline and along the braids. Cotton twill with a visible weave, softened and slightly shiny at the elbows and cuffs from wear, the skirt falling with real weight and self-shadowing inside the pleats; the leather suitcase scuffed to a paler tone at the corners with the grain still readable. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.","promptLocal":"一九三〇年代的中国少女，十九岁，身形单薄、肩膀微微内收，穿藏青色学生装配素白衣领与及小腿的裙子，手里提着一只磨旧的棕色皮箱。鹅蛋脸颊线柔和，一双警觉的大眼睛，眼睑略厚，眉细而直，鼻梁小而挺，双唇轻抿，神情安静而不安；中分黑发梳成两条长辫，辫梢系褪色红绳。年轻皮肤，鼻翼与脸颊可见毛孔、肤色不匀，鼻翼与耳缘有细微毛细血管，耳廓边缘透光；眼睛有湿润高光、下眼睑水光、虹膜纤维与柔和虹膜环；眼睑和眉毛左右略不对称；发际线与辫子边缘有细碎碎发破开轮廓。棉斜纹布可见织纹，肘部与袖口因磨损而发亮，裙褶下垂有真实重量与自阴影；皮箱四角磨白、皮纹仍可辨。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，光线衰减自然，下巴下方与衣褶处有环境遮蔽；浅景深，面部最实。","negativePrompt":"plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop","tags":["character sheet","muted ink-blue palette","1930s china","subsurface skin","directional key light"],"sheet":"Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a dark navy-blue student tunic with a plain white collar, with the face rendered in full detail: oval face with soft rounded cheeks and a delicate jaw, large dark wary eyes with slightly heavy lower lids, straight fine eyebrows, small straight nose, thin lips held lightly closed, a quiet apprehensive expression; centre-parted black hair drawn back into two long braids tied at the tips with faded red string. Young skin with visible pores across the nose and cheeks, uneven tone, faint capillaries at the nostrils and ear rims, subtle subsurface scattering where light passes the ear edge; eyes with a wet specular highlight, moist lower lid, visible iris fibres and a soft limbal ring; eyelids and eyebrows slightly asymmetric — no two sides identical; individual flyaway hair strands breaking the silhouette at the hairline and along the braids. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a slender nineteen-year-old Chinese girl of the 1930s with shoulders drawn slightly inward, wearing a dark navy-blue student tunic with a plain white collar and a mid-calf skirt, holding a battered brown leather suitcase in one hand. Cotton twill with a visible weave, softened and slightly shiny at the elbows and cuffs from wear, the skirt falling with real weight and self-shadowing inside the pleats; the leather suitcase scuffed to a paler tone at the corners with the grain still readable. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the braid tip with its faded red string binding; the worn brass latch and scuffed corner of the leather suitcase; the plain white collar and its cloth knot fastening; one hand gripping the suitcase handle with whitened knuckles; the buckled Mary-Jane shoe and folded white sock. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle."},"voice":{"timbre":"轻而带气声的年轻女声，胸腔支撑薄","pitch":"中高","pace":"偏慢，重要的词前会有一个小停顿","accent":"标准官话，无明显地域色彩","emotion":"试探、戒备，有所保留","prompt":"19-year-old female, light breathy soprano, mid-to-high pitch, thin chest support, narrow dynamic range. Quiet volume, slightly hesitant pace, rising inflection at phrase ends. Standard Mandarin, no regional accent. Tentative and watchful.","referenceHint":"像一个在陌生地方问路、又怕对方追问下去的人"}},{"name":"陆行远","aliases":["陆"],"importance":"major","oneLiner":"二十七八岁的男人，右手一路揣在大衣口袋里，隔着布也能看出握着什么硬东西。","persona":{"gender":"男","ageRange":"二十七八岁","identity":"身份不明的旅人，举止像行伍出身","appearance":"身形精瘦挺拔。脸很瘦，颧骨很高，右边眉骨上有一道两寸长的旧疤。穿一件洗得发灰的军呢大衣，肩上落着一层湿雾，领子拉起来遮住半张脸。（推断）短发，靴子磨损严重。","personality":["戒备","果断","沉默","有威慑感"],"temperament":"上船不扶任何人，一步跨过一尺宽的水面，靴底把船板踩得咚一声响。说话又快又干脆，像在下命令。整段航程站在船头一动不动，右手始终插在口袋里。看沈知微的两眼都很短，什么也没说——他在观察，但不参与。","motivation":"要过河，而且要快。他口袋里那件硬东西的用途，文本没有交代。（推断）","arc":"静止。唯一的松动是最后回头看了沈知微一眼——比第一次那一眼多了点什么。（推断）","relationships":[{"name":"老周","relation":"催他开船的乘客"},{"name":"沈知微","relation":"同船陌生人，两次注意到她"},{"name":"胡二爷","relation":"同船人，未有交流"}],"evidence":["穿一件洗得发灰的军呢大衣，肩上落了一层湿雾。","他的脸很瘦，颧骨很高，右边眉骨上有一道两寸长的旧疤。","他说话又快又干脆，像在下命令：\"开船。\"","右手始终插在大衣口袋里，隔着布，能看出握着什么硬东西的形状。"]},"image":{"prompt":"A lean, rigidly upright Chinese man in his late twenties, wearing a washed-out grey military wool greatcoat with the collar turned up, worn leather boots, right hand in the coat pocket. gaunt angular face, high sharp cheekbones, hollow cheeks, square set jaw, flat unblinking dark eyes under a heavy brow, a two-inch pale old scar cutting across the right brow ridge, straight thin mouth, hard guarded expression; short cropped black hair with high shaved sides. Weather-toughened skin with visible pores, uneven tone and a coarse shaved-stubble shadow along the jaw, faint capillaries at the nostrils; the brow scar sits slightly raised with paler, shinier tissue than the skin around it; eyes with a wet specular highlight, visible iris fibres, reddened inner corners; eyelids and brows noticeably asymmetric; short hair with individual flyaway hair strands breaking the crown silhouette. Heavy wool melton with a visible weave and nap and pilling at the cuffs, shine worn into the elbows and the seat of the coat, the skirt of the greatcoat hanging with real weight and deep self-shadowed folds; leather boots creased across the instep and polished dull at the toe. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.","promptLocal":"二十七八岁的精瘦中国男子，身形挺拔僵直，穿洗得发灰的军呢大衣、领子竖起，皮靴磨损，右手插在大衣口袋里。脸颊消瘦、颧骨高而锋利，眼窝深，眼神平直冷硬，眉骨沉重，右眉骨横着一道两寸长的旧疤，嘴唇薄而直；短寸黑发，两侧推得很高。风吹日晒的粗糙皮肤，毛孔可见、肤色不匀，下颌有青色胡茬阴影，鼻翼有细微毛细血管；疤痕微微隆起，颜色比周围更淡也更亮；眼睛有湿润高光与虹膜纤维，眼角发红；眼睑与眉毛明显不对称；短发有单根发丝破开头顶轮廓。厚重羊毛呢可见绒面与袖口起球，肘部和下摆磨出光泽，大衣下摆垂坠有重量、褶皱深处有自阴影；皮靴脚背处有折痕，鞋头抛光已钝。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。","negativePrompt":"plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop","tags":["character sheet","muted cold grey palette","military greatcoat","weathered skin","wool nap texture"],"sheet":"Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a washed-out grey military wool greatcoat with the collar turned up, with the face rendered in full detail: gaunt angular face, high sharp cheekbones, hollow cheeks, square set jaw, flat unblinking dark eyes under a heavy brow, a two-inch pale old scar cutting across the right brow ridge, straight thin mouth, hard guarded expression; short cropped black hair with high shaved sides. Weather-toughened skin with visible pores, uneven tone and a coarse shaved-stubble shadow along the jaw, faint capillaries at the nostrils; the brow scar sits slightly raised with paler, shinier tissue than the skin around it; eyes with a wet specular highlight, visible iris fibres, reddened inner corners; eyelids and brows noticeably asymmetric; short hair with individual flyaway hair strands breaking the crown silhouette. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a lean, rigidly upright Chinese man in his late twenties, wearing a washed-out grey military wool greatcoat with the collar turned up, worn leather boots, right hand in the coat pocket. Heavy wool melton with a visible weave and nap and pilling at the cuffs, shine worn into the elbows and the seat of the coat, the skirt of the greatcoat hanging with real weight and deep self-shadowed folds; leather boots creased across the instep and polished dull at the toe. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the two-inch scar across the right brow ridge in close-up; the greatcoat collar turned up, showing its lining and stitching; the double-breasted button row and worn buttonholes; the right hand inside the coat pocket, fabric strained over something hard; the scuffed leather boot with its buckle. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle."},"voice":{"timbre":"干涩、聚焦的男中音，共鸣窄，几乎没有暖度","pitch":"中低","pace":"快而短促，句子说完即止","accent":"带北方腔的官话，咬字清脆","emotion":"表面无波澜，底下绷着","prompt":"Late-20s male, dry tight baritone, mid-low pitch, narrow resonant core, hard forward consonants. Low volume, fast clipped pace, abrupt full stops, minimal filler. Northern Mandarin, crisp. Controlled with held tension.","referenceHint":"像一个习惯了下达指令、不需要对方回话的人"}},{"name":"老周","aliases":["老伯"],"importance":"major","oneLiner":"在这条河上摆了四十年渡的老船夫，一只眼睛是白的，一船人的来去他都看在另一只里。","persona":{"gender":"男","ageRange":"七十上下（推断）","identity":"渡口船夫，在这条河上摆渡四十年","appearance":"背驼得像一张拉满的弓。左眼被早年的风沙磨得只剩一层白翳。笑起来牙齿只剩几颗。（推断）面皮被风水侵成深褐色，沟壑纵横，手掌因常年握篙而粗厚变形。","personality":["沉默","耐性","老练","不动声色"],"temperament":"开口时嗓子里总像卡着半口没咽下去的江水，含混、发沉。被问路时不答话，只用篙子点了点对岸——四十年里同样的问题他听过太多遍。全程只笑过一次，是被胡二爷的浑话逗的。","motivation":"把船开过去。雾再厚也照常开船，这是他四十年的日常。","arc":"静止。他是这条河的一部分，不是被这一程改变的人。","relationships":[{"name":"沈知微","relation":"向他问路的年轻渡客"},{"name":"胡二爷","relation":"相熟的老主顾，被他打趣"},{"name":"陆行远","relation":"催他开船的乘客"}],"evidence":["他在这条河上摆了四十年渡，背驼得像一张拉满的弓，左眼被早年的风沙磨得只剩一层白翳。","开口的时候，嗓子里总像卡着半口没咽下去的江水，含混、发沉。","雾一厚，连自己的手都看不清。","老周终于笑了一下，牙齿只剩下几颗。"]},"image":{"prompt":"An elderly Chinese ferryman around seventy with a heavily hunched back, wearing a faded indigo padded jacket with frayed cuffs, rolled trousers and worn straw sandals, holding a long bamboo punting pole. deeply weathered face, sunken cheeks, prominent cheekbones, the left eye clouded a pale milky white while the right stays sharp, sparse grey stubble, a nearly toothless mouth caught in a faint weary smile; thin grey hair cropped close to a balding scalp. Old sun-damaged skin: age spots across the cheekbones and the backs of the hands, slack sagging under the jaw and eyes, visible pores and uneven pigmentation. Eyelids and brows are noticeably asymmetric. Wrinkles follow the expression muscles — nasolabial folds, crow’s feet fanning from the outer eye corners, horizontal forehead lines — never randomly scored. The clouded left eye is dulled and slightly sunken with a bluish-white film, while the right keeps a wet specular highlight and visible iris fibres. Sparse grey stubble with individual hairs; thin flyaway hair strands breaking the silhouette at the balding crown. Coarse hand-woven cotton with a visible weave, quilted and pilled, the indigo faded unevenly and rubbed pale at the shoulders and cuffs, patches sewn on in mismatched thread; the fabric hangs heavy and slack with deep self-shadowing in the folds; straw sandals frayed at the weave. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.","promptLocal":"约七十岁的中国老船夫，背驼得厉害，穿褪色靛蓝棉袄、袖口磨破，裤脚挽起，脚踏磨旧草鞋，手握一根长竹篙。面皮饱经风霜，脸颊凹陷、颧骨突出，左眼蒙着一层灰白翳，右眼仍清亮，灰白胡茬稀疏，几乎无牙的嘴带着一丝疲惫的笑；灰发稀薄，贴着谢顶的头皮。老年日晒受损的皮肤：颧骨和手背有老年斑，下颌与眼下松弛，毛孔与色素沉着可见。皱纹顺着表情肌走——法令纹、外眼角放射的鱼尾纹、额头横纹，绝不是随机刻线。左眼浑浊发暗、略微凹陷、覆一层青白薄膜，右眼有湿润高光与虹膜纤维。胡茬根根分明；谢顶处有细碎飘发。粗糙手织棉，绗缝起球，靛蓝褪色不匀，肩部与袖口磨白，补丁用不同颜色的线缝上；布料垂坠沉重松垮，褶皱深处有自阴影；草鞋编织处已磨散。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。","negativePrompt":"plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop","tags":["character sheet","muted earth palette","aged skin","expression-line wrinkles","faded indigo cotton"],"sheet":"Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a faded indigo padded jacket with frayed cuffs, with the face rendered in full detail: deeply weathered face, sunken cheeks, prominent cheekbones, the left eye clouded a pale milky white while the right stays sharp, sparse grey stubble, a nearly toothless mouth caught in a faint weary smile; thin grey hair cropped close to a balding scalp. Old sun-damaged skin: age spots across the cheekbones and the backs of the hands, slack sagging under the jaw and eyes, visible pores and uneven pigmentation. Eyelids and brows are noticeably asymmetric. Wrinkles follow the expression muscles — nasolabial folds, crow’s feet fanning from the outer eye corners, horizontal forehead lines — never randomly scored. The clouded left eye is dulled and slightly sunken with a bluish-white film, while the right keeps a wet specular highlight and visible iris fibres. Sparse grey stubble with individual hairs; thin flyaway hair strands breaking the silhouette at the balding crown. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is an elderly Chinese ferryman around seventy with a heavily hunched back, wearing a faded indigo padded jacket with frayed cuffs, rolled trousers and worn straw sandals, holding a long bamboo punting pole. Coarse hand-woven cotton with a visible weave, quilted and pilled, the indigo faded unevenly and rubbed pale at the shoulders and cuffs, patches sewn on in mismatched thread; the fabric hangs heavy and slack with deep self-shadowing in the folds; straw sandals frayed at the weave. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the clouded left eye in close-up beside the clear right one; the gnarled hand gripping the bamboo pole; the patched elbow of the padded jacket with frayed cuff; the worn straw sandal on a bare weathered foot; the rolled trouser hem above the ankle. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle."},"voice":{"timbre":"沙哑低沉的男中低音，喉音重，带水汽感","pitch":"低","pace":"缓慢，字与字之间拖着气口","accent":"南方水乡口音，尾音含混","emotion":"疲惫而平静，几乎没有起伏","prompt":"75-year-old male, gravelled husky bass-baritone, low pitch, thick chest resonance, blurred word endings. Low volume, slow pace, long breath pauses, minimal pitch variation. Southern riverside accent, worn-smooth consonants. Settled and weary.","referenceHint":"像一个在同一个渡口喊了四十年\"开船\"、嗓子早就磨平的人"}},{"name":"胡二爷","aliases":["胡"],"importance":"supporting","oneLiner":"挑着两箱货、走一步响三声的胖货郎，一船人的沉默全靠他一个人填。","persona":{"gender":"男","ageRange":"四十来岁","identity":"走街串巷的货郎","appearance":"胖乎乎的，四十来岁。满头是汗，笑起来眼睛眯成两条缝。挑着两只货箱，箱角挂着一串小铜铃，走一步响三声。（推断）短褐布衣，袖子挽到肘部，腰间束带。","personality":["自来熟","话密","热心","市井通达"],"temperament":"嗓门亮得能穿透雾气，人还没到声音先到。上船后一路不停地说话——县城新开的绸缎庄、北边打仗的消息、他那个不成器的儿子。看似只是聒噪，却是全船唯一主动问沈知微\"你一个人去县城？\"的人，那一句\"这世道，一个人不好走\"落得比玩笑重。","motivation":"赶上这班船，把货挑到对岸去卖。","arc":"从纯粹的插科打诨，到最后那声叹息——他是船上唯一说破处境的人。（推断）","relationships":[{"name":"老周","relation":"相熟的老主顾，敢开他玩笑"},{"name":"沈知微","relation":"主动搭话、表示关心的同船人"},{"name":"陆行远","relation":"同船人，未有交流"}],"evidence":["他挑着两只货箱，箱角挂着一串小铜铃，走一步响三声。","他满头是汗，笑起来眼睛眯成两条缝，嗓门亮得能穿透雾气","老周，你这船开得比我娘子的脾气还急！","胡二爷坐在货箱上，一路不停地说话","一个人不好走。"]},"image":{"prompt":"A plump Chinese travelling peddler in his mid-forties, round soft body on stout short legs, wearing a short russet cotton jacket with sleeves rolled to the elbow and a cloth waist sash, carrying a shoulder pole with two wooden crates hung with small brass bells. round full face with fat cheeks pushed up so the eyes crease into thin happy slits, broad flat nose, wide grinning mouth, double chin, sweat beading on a high balding forehead with thinning hair at the sides. Ruddy sun-exposed skin with visible pores, broken capillaries across the cheeks and nose, a sheen of sweat on the forehead catching the light; eyelids and brows slightly asymmetric; laugh lines fanning deep from the eye corners and around the mouth, following the expression muscles; eyes nearly closed by the raised cheeks, with a wet specular highlight in the visible sliver; thinning hair with individual flyaway hair strands breaking the silhouette at the temples. Coarse cotton with a visible weave, sweat-darkened at the collar and under the arms, shine worn into the shoulder where the carrying pole rests, rolled cuffs holding a permanent crease, the cloth hanging with real weight and self-shadowing in the folds; the wooden crates worn smooth and pale at the handled edges. Three-quarter view, waist-up, plain neutral background. Soft directional key light from the upper left with a cool fill, gentle falloff, ambient occlusion under the chin and in the folds; shallow depth of field with the face in sharpest focus. warm palette of russet, mustard and brass, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle.","promptLocal":"四十来岁的中国走乡货郎，体态圆胖，腿短敦实，穿赭红色短布褂、袖子挽到手肘、腰间束布带，肩挑扁担，两只木货箱角上挂着小铜铃。圆脸丰满，脸颊高高鼓起把眼睛挤成细缝，鼻子宽扁，嘴大而咧开，双下巴，谢顶的高额头上渗着汗珠，两侧头发稀疏。日晒的红润皮肤，毛孔可见，脸颊和鼻子有破裂的毛细血管，额头一层汗光反着光；笑纹从眼角和嘴周深深散开，顺着表情肌走；眼睛几乎被鼓起的脸颊挤闭，露出的一线里有湿润高光；稀疏头发在鬓角有细碎飘发。粗棉布可见织纹，领口和腋下被汗浸深，肩上扁担压处磨出光泽，挽起的袖口留着固定折痕；木箱被手握处磨得光滑发白。四分之三视角，半身，纯中性背景。左上方柔和主光配冷调补光，下巴与衣褶处有环境遮蔽；浅景深，面部最实。","negativePrompt":"plastic or waxy skin, over-smoothed airbrushed complexion, poreless doll face, perfectly symmetrical face, dead flat eyes without specular highlight, helmet-like hair with no loose strands, flat untextured fabric with no weave or wear, stiff mannequin posing, extra fingers, malformed hands, text, watermark, signature, busy or patterned background, harsh cast shadows on the backdrop","tags":["character sheet","muted ink-blue palette","ruddy skin","sweat sheen","coarse cotton weave"],"sheet":"Single character model sheet on ONE 16:9 landscape canvas (widescreen, width to height exactly 16:9). The canvas is divided into three zones by thin hairline rules. LEFT ZONE — a vertical column occupying about 34% of the canvas width, separated from the rest by a thin vertical rule: one bust portrait, head and shoulders, front-facing, centred, framed like an ID photograph. BOTH SHOULDERS ARE FULLY VISIBLE with clear space on either side; do not crop the shoulders at the sides, and do not fade, vignette or round off the bottom edge — the portrait ends in a clean straight horizontal cut just below the chest. The figure wears a short russet cotton jacket with a cloth waist sash, with the face rendered in full detail: round full face with fat cheeks pushed up so the eyes crease into thin happy slits, broad flat nose, wide grinning mouth, double chin, sweat beading on a high balding forehead with thinning hair at the sides. Ruddy sun-exposed skin with visible pores, broken capillaries across the cheeks and nose, a sheen of sweat on the forehead catching the light; eyelids and brows slightly asymmetric; laugh lines fanning deep from the eye corners and around the mouth, following the expression muscles; eyes nearly closed by the raised cheeks, with a wet specular highlight in the visible sliver; thinning hair with individual flyaway hair strands breaking the silhouette at the temples. LIGHTING IN THE LEFT ZONE ONLY: a soft directional key light from the upper left with gentle falloff, subtle ambient occlusion under the chin, in the eye sockets and where the collar meets the neck, giving the head real volume. RIGHT-TOP ZONE — the upper part of the remaining 66%, separated from the zone beneath it by a thin horizontal rule: three FULL-BODY views of the SAME character standing side by side — front view, left side profile, and back view — aligned on one shared ground line. PROPORTIONS ARE CRITICAL: all three figures share exactly the same height, head-to-body ratio and costume details; anatomy must be correct and natural — correct limb lengths, correct head size relative to the body, feet planted on the ground line; no stretching, squashing or foreshortening to make a figure fit the space. Each figure is drawn head to toe with clear margin above the head and below the feet. Neutral relaxed standing posture, arms at the sides. The figure is a plump Chinese travelling peddler in his mid-forties, round soft body on stout short legs, wearing a short russet cotton jacket with sleeves rolled to the elbow and a cloth waist sash, carrying a shoulder pole with two wooden crates hung with small brass bells. Coarse cotton with a visible weave, sweat-darkened at the collar and under the arms, shine worn into the shoulder where the carrying pole rests, rolled cuffs holding a permanent crease, the cloth hanging with real weight and self-shadowing in the folds; the wooden crates worn smooth and pale at the handled edges. The faces on all three full-body views are fully drawn and must match the bust portrait exactly — same features, same hairstyle, same expression. LIGHTING IN THE RIGHT ZONES: flat even orthographic lighting with no directional key and no cast shadows, so the figures stay measurable and cleanly cut out — only the left bust portrait is dramatically lit. RIGHT-BOTTOM ZONE — a detail strip beneath the three views, above which sits the thin horizontal rule: four to five small isolated close-up studies of the character's key details, evenly spaced in a row and clearly smaller than the full-body figures: the small brass bells hung on the crate corner; the shoulder pole where it rests on the padded shoulder; the sweat-beaded forehead and thinning hairline in close-up; one wooden goods crate with its lid latch and worn edges; the cloth waist sash and its knot. If these details do not fit comfortably in one row along the bottom, continue them in a narrow vertical column down the right-hand edge of the canvas — but NEVER shrink or distort the three full-body figures to make room; the detail studies give way, not the figures. Plain pure white background (#FFFFFF) throughout, suitable for clean cut-out. Balanced composition with generous, even white margins; nothing crowded against an edge. warm palette of russet, mustard and brass, muted ink-blue and cold grey palette, 1930s Republican-era China, soft misty morning light, readable silhouette from every angle."},"voice":{"timbre":"明亮、带金属芒的男高音，穿透力强","pitch":"中高","pace":"快，句子连成一片，几乎不换气","accent":"北方乡音，元音开阔","emotion":"外放、乐呵，毫无防备","prompt":"Mid-40s male, bright brassy tenor, mid-high pitch, broad forward ring, strong breath support. Loud carrying volume, fast tumbling pace, wide springy intonation, laughter breaking in. Rural northern accent, wide open vowels. Unguardedly cheerful.","referenceHint":"像一个隔着两条街就能听见他招呼你的人"}}]}</script>
+
+<script>
+const L = {"copied":"已复制","failed":"复制失败"};
+
+// 导出：报告自己就带着完整的 cast.json，下载的是它原样
+document.querySelector('.expo').addEventListener('click', (e) => {
+  const btn = e.currentTarget;
+  const url = URL.createObjectURL(
+    new Blob([document.getElementById('cast-data').textContent], { type: 'application/json' }),
+  );
+  const a = Object.assign(document.createElement('a'), { href: url, download: btn.dataset.name });
+  a.click();
+  // 别在 click 之后立刻回收——Safari 上会抢在下载读完之前把 blob 撤掉，存出来是空文件
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+});
+
+// 左栏切换：一次只显示一个角色
+document.querySelector('.roster').addEventListener('click', (e) => {
+  const btn = e.target.closest('.rost');
+  if (!btn) return;
+  document.querySelectorAll('.rost').forEach((b) => b.classList.toggle('on', b === btn));
+  document.querySelectorAll('.char').forEach((a) => a.classList.toggle('on', a.id === btn.dataset.target));
+  showGraph(false);
+  document.querySelector('.main').scrollIntoView({ block: 'start', behavior: 'smooth' });
+});
+
+// 关系图谱：一张全景视图，跟角色详情互斥
+const gv = document.querySelector('.graph');
+const gbtn = document.querySelector('.gtoggle');
+function showGraph(on) {
+  gv.classList.toggle('on', on);
+  gbtn.classList.toggle('on', on);
+  document.querySelector('.main').classList.toggle('gmode', on);
+}
+gbtn.addEventListener('click', () => {
+  showGraph(true);
+  document.querySelector('.main').scrollIntoView({ block: 'start', behavior: 'smooth' });
+});
+{
+  // 弦和弦上的文字共用 data-a/data-b，高亮逻辑完全一样，放一个数组里
+  const edges = [...gv.querySelectorAll('.gedge, .glabel')];
+  const nodes = [...gv.querySelectorAll('.gnode')];
+  const rows = [...gv.querySelectorAll('.grow')];
+  const clear = () => [...edges, ...nodes, ...rows].forEach((el) => el.classList.remove('hot', 'dim'));
+
+  // 悬停一个人：他的关系线亮起来，没关系的压到背景里
+  const byNode = (name) => {
+    const near = new Set([name]);
+    for (const e of edges) {
+      if (e.dataset.a === name) near.add(e.dataset.b);
+      if (e.dataset.b === name) near.add(e.dataset.a);
+    }
+    for (const e of edges) {
+      const hot = e.dataset.a === name || e.dataset.b === name;
+      e.classList.toggle('hot', hot);
+      e.classList.toggle('dim', !hot);
+    }
+    for (const nd of nodes) {
+      nd.classList.toggle('hot', nd.dataset.node === name);
+      nd.classList.toggle('dim', !near.has(nd.dataset.node));
+    }
+    for (const r of rows) {
+      const hot = r.dataset.a === name || r.dataset.b === name;
+      r.classList.toggle('hot', hot);
+      r.classList.toggle('dim', !hot);
+    }
+  };
+
+  // 悬停关系表的一行：只亮那一条弦
+  const byEdge = (a, b) => {
+    for (const e of edges) {
+      const hot = e.dataset.a === a && e.dataset.b === b;
+      e.classList.toggle('hot', hot);
+      e.classList.toggle('dim', !hot);
+    }
+    for (const nd of nodes) {
+      const hot = nd.dataset.node === a || nd.dataset.node === b;
+      nd.classList.toggle('hot', hot);
+      nd.classList.toggle('dim', !hot);
+    }
+    for (const r of rows) {
+      const hot = r.dataset.a === a && r.dataset.b === b;
+      r.classList.toggle('hot', hot);
+      r.classList.toggle('dim', !hot);
+    }
+  };
+
+  const jump = (el) => {
+    const item = document.querySelector('.rost[data-target="' + el.dataset.target + '"]');
+    if (item) item.click();
+  };
+
+  // 关系文字的总开关：人多的时候标签会盖住图，一键收起
+  const glab = gv.querySelector('.glabtoggle');
+  glab.addEventListener('click', () => {
+    const on = !gv.classList.contains('labels');
+    gv.classList.toggle('labels', on);
+    glab.classList.toggle('on', on);
+    glab.setAttribute('aria-pressed', String(on));
+  });
+
+  gv.addEventListener('mouseover', (e) => {
+    const nd = e.target.closest('.gnode');
+    const row = e.target.closest('.grow');
+    if (nd) byNode(nd.dataset.node);
+    else if (row) byEdge(row.dataset.a, row.dataset.b);
+    else clear();
+  });
+  gv.addEventListener('mouseleave', clear);
+  gv.addEventListener('focusin', (e) => {
+    const nd = e.target.closest('.gnode');
+    if (nd) byNode(nd.dataset.node);
+  });
+  gv.addEventListener('click', (e) => {
+    const hit = e.target.closest('.gnode, .grow');
+    if (hit) jump(hit);
+  });
+  // SVG 的 <g> 不是原生按钮，回车/空格要自己接
+  gv.addEventListener('keydown', (e) => {
+    const nd = e.target.closest('.gnode');
+    if (!nd || (e.key !== 'Enter' && e.key !== ' ')) return;
+    e.preventDefault();
+    jump(nd);
+  });
+}
+
+// 搜索：过滤左栏；结果只剩一个就直接切过去
+document.getElementById('q').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  let hits = [];
+  document.querySelectorAll('.rost').forEach((b) => {
+    const hit = !q || b.dataset.hay.toLowerCase().includes(q);
+    b.style.display = hit ? '' : 'none';
+    if (hit) hits.push(b);
+  });
+  document.querySelector('.nomatch').classList.toggle('on', hits.length === 0);
+  if (q && hits.length === 1) hits[0].click();
+});
+
+// 摘要默认三行，点一下展开全部；短到不需要折叠的就直接去掉折叠态
+const syn = document.querySelector('.synopsis');
+if (syn) {
+  const body = syn.querySelector('p');
+  if (body.scrollHeight <= body.clientHeight + 1) syn.classList.remove('syn-clamp');
+  syn.addEventListener('click', () => syn.classList.remove('syn-clamp'));
+}
+
+// 图片弹层
+const lb = document.querySelector('.lightbox');
+const lbImg = lb.querySelector('img');
+function closeLb() { lb.classList.remove('on'); lbImg.removeAttribute('src'); }
+document.addEventListener('click', (e) => {
+  const z = e.target.closest('.zoom');
+  if (z) { lbImg.src = z.dataset.src; lb.classList.add('on'); return; }
+  if (e.target.closest('.lightbox')) closeLb();
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLb(); });
+
+// 复制图片本身到剪贴板（不是路径）
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.copy-img');
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const label = btn.textContent;
+  try {
+    const blob = await (await fetch(btn.dataset.img)).blob();
+    // Safari 只认 image/png，其它格式先过一遍 canvas
+    let png = blob;
+    if (blob.type !== 'image/png') {
+      const bmp = await createImageBitmap(blob);
+      const cv = Object.assign(document.createElement('canvas'), { width: bmp.width, height: bmp.height });
+      cv.getContext('2d').drawImage(bmp, 0, 0);
+      png = await new Promise((r) => cv.toBlob(r, 'image/png'));
+    }
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': png })]);
+    btn.textContent = L.copied;
+    btn.dataset.done = '1';
+  } catch {
+    btn.textContent = L.failed;
+  }
+  setTimeout(() => { btn.textContent = label; delete btn.dataset.done; }, 1600);
+});
+
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.copy');
+  if (!btn) return;
+  e.preventDefault();
+  const label = btn.textContent;
+  try {
+    await navigator.clipboard.writeText(btn.dataset.copy);
+    btn.textContent = L.copied;
+    btn.dataset.done = '1';
+  } catch {
+    btn.textContent = L.failed;
+  }
+  setTimeout(() => { btn.textContent = label; delete btn.dataset.done; }, 1600);
+});
+</script>
+</body></html>
