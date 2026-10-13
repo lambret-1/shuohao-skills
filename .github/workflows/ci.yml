@@ -74,40 +74,38 @@ jobs:
         run: mkdir -p test
 
       - name: render outline smoke test
-        run: >
-          node skills/novel-outline/scripts/novel-outline.mjs render
-          skills/novel-outline/examples/渡口-outline.json --html > test/outline.html
+        run: |
+          node skills/novel-outline/scripts/novel-outline.mjs render skills/novel-outline/examples/渡口-outline.json --html > test/outline.html
+          node skills/novel-outline/scripts/novel-outline.mjs render skills/novel-outline/examples/渡口-outline.json --md > test/outline.md
 
       - name: render characters smoke test
-        run: node skills/novel-characters/scripts/novel-characters.mjs render skills/novel-characters/examples/渡口-cast.json --html > test/cast.html
+        run: |
+          node skills/novel-characters/scripts/novel-characters.mjs render skills/novel-characters/examples/渡口-cast.json --html > test/cast.html
+          node skills/novel-characters/scripts/novel-characters.mjs render skills/novel-characters/examples/渡口-cast.json --md > test/cast.md
 
       - name: render art smoke test
-        run: node skills/novel-art/scripts/novel-art.mjs render skills/novel-art/examples/渡口-art.json --html > test/art.html
+        run: |
+          node skills/novel-art/scripts/novel-art.mjs render skills/novel-art/examples/渡口-art.json --html > test/art.html
+          node skills/novel-art/scripts/novel-art.mjs render skills/novel-art/examples/渡口-art.json --md > test/art.md
 
       - name: render script smoke test
-        run: >
-          node skills/novel-script/scripts/novel-script.mjs render
-          skills/novel-script/examples/渡口-script.json --html
-          --outline skills/novel-outline/examples/渡口-outline.json
-          --art skills/novel-art/examples/渡口-art.json
-          --cast skills/novel-characters/examples/渡口-cast.json
-          > test/script.html
+        run: |
+          node skills/novel-script/scripts/novel-script.mjs render skills/novel-script/examples/渡口-script.json --html --outline skills/novel-outline/examples/渡口-outline.json --art skills/novel-art/examples/渡口-art.json --cast skills/novel-characters/examples/渡口-cast.json > test/script.html
+          node skills/novel-script/scripts/novel-script.mjs render skills/novel-script/examples/渡口-script.json --md --outline skills/novel-outline/examples/渡口-outline.json --art skills/novel-art/examples/渡口-art.json > test/script.md
 
       - name: render storyboard smoke test
-        run: >
-          node skills/novel-storyboard/scripts/novel-storyboard.mjs render
-          skills/novel-storyboard/examples/渡口-storyboard.json --html
-          --script skills/novel-script/examples/渡口-script.json
-          --outline skills/novel-outline/examples/渡口-outline.json
-          --art skills/novel-art/examples/渡口-art.json
-          > test/storyboard.html
+        run: |
+          node skills/novel-storyboard/scripts/novel-storyboard.mjs render skills/novel-storyboard/examples/渡口-storyboard.json --html --script skills/novel-script/examples/渡口-script.json --outline skills/novel-outline/examples/渡口-outline.json --art skills/novel-art/examples/渡口-art.json > test/storyboard.html
+          node skills/novel-storyboard/scripts/novel-storyboard.mjs render skills/novel-storyboard/examples/渡口-storyboard.json --md --script skills/novel-script/examples/渡口-script.json --outline skills/novel-outline/examples/渡口-outline.json --art skills/novel-art/examples/渡口-art.json > test/storyboard.md
 
       - name: upload rendered reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: example-reports
-          path: test/*.html
+          path: |
+            test/*.html
+            test/*.md
 
       - name: commit reports back to main
         run: |
