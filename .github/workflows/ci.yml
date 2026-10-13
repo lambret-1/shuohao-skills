@@ -5,6 +5,15 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      book_url:
+        description: "小说正文 URL（.txt 或网页）"
+        required: true
+      book_title:
+        description: "书名（用于输出目录命名，如：八零新婚夜）"
+        required: true
+        default: "book"
 
 jobs:
   test:
@@ -116,5 +125,47 @@ jobs:
             git commit -m "ci: update test/ example reports [skip ci]"
             git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  fetch-book:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: download book
+        run: |
+          mkdir -p test/${{ inputs.book_title }}
+          curl -sL "${{ inputs.book_url }}" -o test/${{ inputs.book_title }}/book.txt
+          wc -c test/${{ inputs.book_title }}/book.txt
+
+      - name: outline chunk (split into volumes)
+        run: |
+          mkdir -p test/${{ inputs.book_title }}/outline-chunks
+          node skills/novel-outline/scripts/novel-outline.mjs chunk \
+            test/${{ inputs.book_title }}/book.txt \
+            test/${{ inputs.book_title }}/outline-chunks
+
+      - name: characters chunk (split into roster blocks)
+        run: |
+          mkdir -p test/${{ inputs.book_title }}/roster-blocks
+          node skills/novel-characters/scripts/novel-characters.mjs chunk \
+            test/${{ inputs.book_title }}/book.txt \
+            test/${{ inputs.book_title }}/roster-blocks
+
+      - name: commit fetched book
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add test/${{ inputs.book_title }}
+          git commit -m "ci: fetch book '${{ inputs.book_title }}' from URL [skip ci]"
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
