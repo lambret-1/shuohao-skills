@@ -68,17 +68,19 @@ jobs:
           --cast skills/novel-characters/examples/渡口-cast.json
           --art skills/novel-art/examples/渡口-art.json
 
+      - name: prepare output dir
+        run: mkdir -p test
+
       - name: render outline smoke test
         run: >
           node skills/novel-outline/scripts/novel-outline.mjs render
-          skills/novel-outline/examples/渡口-outline.json --html > /tmp/outline.html
-        working-directory: ${{ github.workspace }}
+          skills/novel-outline/examples/渡口-outline.json --html > test/outline.html
 
       - name: render characters smoke test
-        run: node skills/novel-characters/scripts/novel-characters.mjs render skills/novel-characters/examples/渡口-cast.json --html > /tmp/cast.html
+        run: node skills/novel-characters/scripts/novel-characters.mjs render skills/novel-characters/examples/渡口-cast.json --html > test/cast.html
 
       - name: render art smoke test
-        run: node skills/novel-art/scripts/novel-art.mjs render skills/novel-art/examples/渡口-art.json --html > /tmp/art.html
+        run: node skills/novel-art/scripts/novel-art.mjs render skills/novel-art/examples/渡口-art.json --html > test/art.html
 
       - name: render script smoke test
         run: >
@@ -87,7 +89,7 @@ jobs:
           --outline skills/novel-outline/examples/渡口-outline.json
           --art skills/novel-art/examples/渡口-art.json
           --cast skills/novel-characters/examples/渡口-cast.json
-          > /tmp/script.html
+          > test/script.html
 
       - name: render storyboard smoke test
         run: >
@@ -96,11 +98,11 @@ jobs:
           --script skills/novel-script/examples/渡口-script.json
           --outline skills/novel-outline/examples/渡口-outline.json
           --art skills/novel-art/examples/渡口-art.json
-          > /tmp/storyboard.html
+          > test/storyboard.html
 
       - name: upload rendered reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: example-reports
-          path: /tmp/*.html
+          path: test/*.html
