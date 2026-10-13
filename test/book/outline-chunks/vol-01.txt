@@ -1,0 +1,234 @@
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/op-acddf38478d45ef9.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/nc-96cd2a2600416573.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/qmp-c7cfba40cf5a93b0.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/j6-148a74299e5a01ab.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/t7l-a52ba56147f77909.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/4u-ec4874f70bfd5d76.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/s07-9b492235a70636ac.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/y5-ed17e73b4c0bd15e.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/n4-36f3a9854827882d.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/j8-aa459d049a8e8b19.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/la-27679061f16e1495.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/ck-b611a5f03eeab5af.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/ftx-39fb490e3c1d778f.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/7r4-0f4ed99088696399.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/ric-f19c81e196f39170.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/pd7-c7147c8bf830bcb9.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/86g-ec28c25ed7d5de06.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/sng-a47538d7fd38d342.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/iq-6d4ecf6d2fb6993c.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/p2-dac836fd57d8fe2d.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/v2-7ec2a19b5829e86d.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/4d-76d8acdf21a33266.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/7u-6196650112269cff.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/lf-910ef220ce85c660.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/2-93d705374a1071cc.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/e3-f8eb6c7be2505275.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/p2u-4d8f684e54df9abb.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/aci-fe01735312f3acec.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/qo-58f38b2a0ad34ea6.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/pu-52c7e3a0a429730e.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/ks-9730eb20e04469a6.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/0wl-0b61a7f69e4bce22.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/cu-7b77d2bf62ff5bf0.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/l1n-0be7bf1e624c1575.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/dw-b17e43fbf0ccc3d4.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/47-354f29958e0fa608.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/lz-f40ea9b99e79ec02.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/id-7f39706ba9007db6.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/1qk-d1a60975c13830a3.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/vro-55568267a19812b6.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/vz1-29bb3d693d52db27.js" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/4s-2a6f135ce7b801b1.js" />
+<script crossorigin="anonymous" type="module" src="https://github.githubassets.com/assets/code-view-5d9d93a7080fe740.js" defer="defer"></script>
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react-css.19c094e442d2b51f.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/0wl.b6b50dbb1f2af916.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/code-view.65166aff44b1c6f3.module.css" />
+
+
+  <title>GitHub - lambret-1/XiaoShuo · GitHub</title>
+
+
+
+  <meta name="route-pattern" content="/:user_id/:repository" data-turbo-transient>
+  <meta name="route-controller" content="files" data-turbo-transient>
+  <meta name="route-action" content="disambiguate" data-turbo-transient>
+  <meta name="fetch-nonce" content="v2:c384ad6b-8e2a-0fbb-54c2-c95411699d5c">
+
+    
+  <meta name="current-catalog-service-hash" content="f3abb0cc802f3d7b95fc8762b94bdcb13bf39634c40c357301c4aa1d67a256fb">
+
+
+  <meta name="request-id" content="8081:2F1FC1:2ECD67:3AA6E1:6ACEB445" data-pjax-transient="true"/><meta name="html-safe-nonce" content="84769a5f85b09c71948ae8b203d50a889ab7bd04d4294f95c216d468150e5396" data-pjax-transient="true"/><meta name="visitor-payload" content="eyJyZWZlcnJlciI6IiIsInJlcXVlc3RfaWQiOiI4MDgxOjJGMUZDMToyRUNENjc6M0FBNkUxOjZBQ0VCNDQ1IiwidmlzaXRvcl9pZCI6IjExNzYzMTU3MDA2NDY0MDY5IiwicmVnaW9uX2VkZ2UiOiJpYWQiLCJyZWdpb25fcmVuZGVyIjoiaWFkIn0=" data-pjax-transient="true"/><meta name="visitor-hmac" content="e5bf8c76deb86e6da27ee603e9d9bc3daae62e171daec206db3dd0b2245a7ea8" data-pjax-transient="true"/>
+
+
+    <meta name="hovercard-subject-tag" content="repository:1414612679" data-turbo-transient>
+
+
+  <meta name="github-keyboard-shortcuts" content="repository,copilot" data-turbo-transient="true" />
+  
+
+  <meta name="selected-link" value="repo_source" data-turbo-transient>
+  <link rel="assets" href="https://github.githubassets.com/">
+
+    <meta name="google-site-verification" content="Apib7-x98H0j5cPqHWwSMm6dNU4GmODRoqxLiDzdx9I">
+
+<meta name="octolytics-url" content="https://collector.github.com/github/collect" />
+
+
+
+
+
+  <meta name="analytics-location" content="/&lt;user-name&gt;/&lt;repo-name&gt;" data-turbo-transient="true" />
+
+  
+
+
+
+
+    <meta name="user-login" content="">
+
+  
+
+    <meta name="viewport" content="width=device-width">
+
+    
+
+      <meta name="description" content="Contribute to lambret-1/XiaoShuo development by creating an account on GitHub.">
+
+      <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub">
+
+    <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
+    <meta property="fb:app_id" content="1401488693436528">
+    <meta name="apple-itunes-app" content="app-id=1477376905, app-argument=https://github.com/lambret-1/XiaoShuo" />
+
+      <meta name="twitter:image" content="https://opengraph.githubassets.com/4e388980bc1476f572a66b995fdb0972fc11f8723aa4c1fa3fe150456982ac59/lambret-1/XiaoShuo" /><meta name="twitter:site" content="@github" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="GitHub - lambret-1/XiaoShuo" /><meta name="twitter:description" content="Contribute to lambret-1/XiaoShuo development by creating an account on GitHub." />
+  <meta property="og:image" content="https://opengraph.githubassets.com/4e388980bc1476f572a66b995fdb0972fc11f8723aa4c1fa3fe150456982ac59/lambret-1/XiaoShuo" /><meta property="og:image:alt" content="Contribute to lambret-1/XiaoShuo development by creating an account on GitHub." /><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="600" /><meta property="og:site_name" content="GitHub" /><meta property="og:type" content="object" /><meta property="og:title" content="GitHub - lambret-1/XiaoShuo" /><meta property="og:url" content="https://github.com/lambret-1/XiaoShuo" /><meta property="og:description" content="Contribute to lambret-1/XiaoShuo development by creating an account on GitHub." />
+  
+
+
+
+
+      <meta name="hostname" content="github.com">
+
+
+
+        <meta name="expected-hostname" content="github.com">
+
+
+  <meta http-equiv="x-pjax-version" content="f4402118a5ca9cd63a899d544e3765b6f9fd213a54407c1e84f879b13d5208fa" data-turbo-track="reload">
+  <meta http-equiv="x-pjax-csp-version" content="c4a65e47b0c850e1157ae8e66298070851d7e3b558038de5a3b4ff7a93e630ed" data-turbo-track="reload">
+  <meta http-equiv="x-pjax-css-version" content="82a2c1889c4e432571c868dd87c40cf9474cfce8189df4b1765859cf2499590a" data-turbo-track="reload">
+  <meta http-equiv="x-pjax-js-version" content="bf91ee8ff5a84d055250c8ac23f1f362851b3bd72faa1ac15ff25760aabd5e05" data-turbo-track="reload">
+
+  <meta name="turbo-cache-control" content="no-preview" data-turbo-transient="">
+
+      <meta name="turbo-cache-control" content="no-cache" data-turbo-transient>
+
+    <meta data-hydrostats="publish">
+
+  <meta name="go-import" content="github.com/lambret-1/XiaoShuo git https://github.com/lambret-1/XiaoShuo.git">
+
+  <meta name="octolytics-dimension-user_id" content="326170426" /><meta name="octolytics-dimension-user_login" content="lambret-1" /><meta name="octolytics-dimension-repository_id" content="1414612679" /><meta name="octolytics-dimension-repository_nwo" content="lambret-1/XiaoShuo" /><meta name="octolytics-dimension-repository_public" content="true" /><meta name="octolytics-dimension-repository_is_fork" content="false" /><meta name="octolytics-dimension-repository_network_root_id" content="1414612679" /><meta name="octolytics-dimension-repository_network_root_nwo" content="lambret-1/XiaoShuo" />
+  
+
+
+
+    
+
+    <meta name="turbo-body-classes" content="logged-out env-production page-responsive">
+  <meta name="disable-turbo" content="false">
+
+
+  <meta name="browser-stats-url" content="https://api.github.com/_private/browser/stats">
+
+
+  <meta name="browser-errors-url" content="https://api.github.com/_private/browser/errors">
+
+  <meta name="release" content="7a16aa1b59e6b53df7b4f1948b80d3973f37f75b" data-turbo-track="reload">
+  <meta name="ui-target" content="full">
+
+  <link rel="mask-icon" href="https://github.githubassets.com/assets/pinned-octocat-093da3e6fa40.svg" color="#000000">
+  <link rel="alternate icon" class="js-site-favicon" type="image/png" href="https://github.githubassets.com/favicons/favicon.png">
+  <link rel="icon" class="js-site-favicon" type="image/svg+xml" href="https://github.githubassets.com/favicons/favicon.svg" data-base-href="https://github.githubassets.com/favicons/favicon">
+
+<meta name="theme-color" content="#1e2327">
+<meta name="color-scheme" content="light dark" />
+
+
+  <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials">
+
+  </head>
+
+  <body class="logged-out env-production page-responsive" style="word-wrap: break-word;" >
+    <div data-turbo-body class="logged-out env-production page-responsive" style="word-wrap: break-word;" >
+      <div id="__primerPortalRoot__" style="z-index: 1000; position: absolute; width: 100%;" data-turbo-permanent></div>
+      
+
+    <div class="position-relative header-wrapper js-header-wrapper ">
+      <a href="#start-of-content" data-skip-target-assigned="false" class="px-2 tmp-py-4 color-bg-accent-emphasis color-fg-on-emphasis show-on-focus js-skip-to-content">Skip to content</a>
+
+      <span data-view-component="true" class="progress-pjax-loader Progress position-fixed width-full">
+    <span style="width: 0%;" data-view-component="true" class="Progress-item progress-pjax-loader-bar left-0 top-0 color-bg-accent-emphasis"></span>
+</span>      
+      <link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/j2-68434961498b7a8a.js" fetchpriority="low" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/keyboard-shortcuts-dialog-d3336e149b529b75.js" fetchpriority="low" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react-css.19c094e442d2b51f.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/keyboard-shortcuts-dialog.d0f80af8a9da91af.module.css" />
+
+<react-partial
+  partial-name="keyboard-shortcuts-dialog"
+  data-ssr="false"
+  data-attempted-ssr="false"
+  data-react-profiling="false"
+>
+  
+  <script type="application/json" data-target="react-partial.embeddedData">{"props":{"docsUrl":"https://docs.github.com/get-started/accessibility/keyboard-shortcuts"}}</script>
+  <div data-target="react-partial.reactRoot"></div>
+</react-partial>
+
+
+
+
+
+      
+
+          <link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/app-install-banner-partial-cb873c3a40789f0b.js" fetchpriority="low" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react-css.19c094e442d2b51f.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/app-install-banner-partial.bcb5769b46e190d1.module.css" />
+
+<react-partial
+  partial-name="app-install-banner-partial"
+  data-ssr="false"
+  data-attempted-ssr="false"
+  data-react-profiling="false"
+>
+  
+  <script type="application/json" data-target="react-partial.embeddedData">{"props":{}}</script>
+  <div data-target="react-partial.reactRoot"></div>
+</react-partial>
+
+
+          
+
+                <link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/et9-c17a6241a97c7388.js" fetchpriority="low" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/7o-79f051372a67f129.js" fetchpriority="low" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/fz-c28a93818d6ea8a9.js" fetchpriority="low" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/c0-a64f12b351c71a3d.js" fetchpriority="low" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/hw-8ce7888b57d0a23c.js" fetchpriority="low" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/e4-2c5b5e0c99981362.js" fetchpriority="low" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/53-ec51721c41fd7af0.js" fetchpriority="low" />
+<link crossorigin="anonymous" rel="modulepreload" href="https://github.githubassets.com/assets/marketing-header-5bc1714e62d4df88.js" fetchpriority="low" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react-css.19c094e442d2b51f.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/primer-react-brand-css.66d4aea99ad34da6.module.css" />
+<link crossorigin="anonymous" media="all" rel="stylesheet" href="https://github.githubassets.com/assets/marketing-header.66cbdcfdc2ec7f58.module.css" />
+
+<react-partial
+  partial-name="marketing-header"
+  data-ssr="true"
+  data-attempted-ssr="true"
+  data-react-profiling="false"
+>
+  
+  <script type="application/json" data-target="react-partial.embeddedData">{"props":{"color_mode":"dark","logged_in":false,"marketing_page":false,"home_path":"/","login_path":"/login?return_to=https%3A%2F%2Fgithub.com%2Flambret-1%2FXiaoShuo","signup_path":"/signup?ref_cta=Sign+up\u0026ref_loc=header+logged+out\u0026ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E\u0026source=header-repo\u0026source_repo=lambret-1%2FXiaoShuo","signup_enabled":true,"is_signup_controller":false,"show_search_and_nav":true,"hide_search":false,"private_mode_enabled":false,"should_use_dotcom_links":true,"auth_hydro_click":"{\"event_type\":\"authentication.click\",\"payload\":{\"location_in_page\":\"site header menu\",\"repository_id\":null,\"auth_type\":\"SIGN_UP\",\"originating_url\":\"https://github.com/lambret-1/XiaoShuo\",\"user_id\":null}}","auth_hydro_click_hmac":"eb15a62d90a8c83dc5dab2777727c565bde4d2e6e69a4b38f945ebca52aa8590","overlay":false,"fixed":false}}</script>
+  <div data-target="react-partial.reactRoot"><div data-color-mode="dark" data-light-theme="light" data-dark-theme="dark"><header class="root__q6pgdo HeaderMktg header-logged-out" role="banner" data-marketing-header="true" data-color-mode="dark" data-light-theme="light" data-dark-theme="dark" data-is-top="true"><h2 class="visuallyHidden__TIbnmb">Navigation Menu</h2><button type="button" class="backdrop__rMNFxs" aria-label="Close navigation menu"></button><div class="bar__cF4m1O"><div class="topRow__-dqkhM"><div class="toggleSlot__-ODxSX"><button type="button" class="toggle__kPg75-" aria-label="Toggle navigation" aria-expanded="false"><span class="toggleBar__8J10Uq"></span><span class="toggleBar__8J10Uq"></span><span class="toggleBar__8J10Uq"></span></button></div><a href="/" aria-label="Homepage" class="logo__bX9RKh" data-analytics-event="{&quot;action&quot;:&quot;homepage&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;context&quot;:&quot;logo&quot;,&quot;location&quot;:&quot;header&quot;,&quot;label&quot;:&quot;homepage_link_logo_header&quot;}"><svg data-component="Octicon" aria-hidden="true" focusable="false" class="octicon octicon-mark-github" viewBox="0 0 24 24" width="32" height="32" fill="currentColor" display="inline-block" overflow="visible" style="vertical-align:text-bottom"><path d="M10.226 17.284c-2.965-.36-5.054-2.493-5.054-5.256 0-1.123.404-2.336 1.078-3.144-.292-.741-.247-2.314.09-2.965.898-.112 2.111.36 2.83 1.01.853-.269 1.752-.404 2.853-.404 1.1 0 1.999.135 2.807.382.696-.629 1.932-1.1 2.83-.988.315.606.36 2.179.067 2.942.72.854 1.101 2 1.101 3.167 0 2.763-2.089 4.852-5.098 5.234.763.494 1.28 1.572 1.28 2.807v2.336c0 .674.561 1.056 1.235.786 4.066-1.55 7.255-5.615 7.255-10.646C23.5 6.188 18.334 1 11.978 1 5.62 1 .5 6.188.5 12.545c0 4.986 3.167 9.12 7.435 10.669.606.225 1.19-.18 1.19-.786V20.63a2.9 2.9 0 0 1-1.078.224c-1.483 0-2.359-.808-2.987-2.313-.247-.607-.517-.966-1.034-1.033-.27-.023-.359-.135-.359-.27 0-.27.45-.471.898-.471.652 0 1.213.404 1.797 1.235.45.651.921.943 1.483.943.561 0 .92-.202 1.437-.719.382-.381.674-.718.944-.943"></path></svg></a><div class="mobileActions__8F9jkX"><a class="Primer_Brand__Button-module__Button___scH9Z Primer_Brand__Button-module__Button--subtle___F7pEE Primer_Brand__Button-module__Button--size-small___zQrEw cta__xkenoh" href="/login?return_to=https%3A%2F%2Fgithub.com%2Flambret-1%2FXiaoShuo" data-analytics-event="{&quot;action&quot;:&quot;sign_in&quot;,&quot;tag&quot;:&quot;link&quot;,&quot;context&quot;:&quot;auth_cta&quot;,&quot;location&quot;:&quot;header&quot;,&quot;label&quot;:&quot;sign_in_link
